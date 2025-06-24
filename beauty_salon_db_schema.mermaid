@@ -1,0 +1,192 @@
+erDiagram
+    %% Tables Utilisateurs
+    users {
+        int id PK
+        string email UK
+        string password
+        string first_name
+        string last_name
+        string phone
+        string address
+        enum role "client,admin,employee"
+        datetime created_at
+        datetime updated_at
+        boolean is_active
+    }
+
+    %% Tables Services
+    service_categories {
+        int id PK
+        string name
+        string description
+        string icon
+        boolean is_active
+        int sort_order
+    }
+
+    services {
+        int id PK
+        int category_id FK
+        string name
+        text description
+        decimal price
+        int duration_minutes
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+
+    %% Tables Employés
+    employees {
+        int id PK
+        int user_id FK
+        text bio
+        string specialties
+        boolean is_available
+        json working_hours
+        datetime created_at
+        datetime updated_at
+    }
+
+    employee_services {
+        int id PK
+        int employee_id FK
+        int service_id FK
+    }
+
+    %% Tables Réservations
+    appointments {
+        int id PK
+        int client_id FK
+        int service_id FK
+        int employee_id FK
+        datetime appointment_date
+        enum status "pending,confirmed,in_progress,completed,cancelled"
+        decimal price
+        text notes
+        datetime created_at
+        datetime updated_at
+        datetime reminder_sent_at
+    }
+
+    %% Tables Produits
+    product_categories {
+        int id PK
+        string name
+        string description
+        boolean is_active
+        int sort_order
+    }
+
+    products {
+        int id PK
+        int category_id FK
+        string name
+        text description
+        decimal price
+        int stock_quantity
+        string sku UK
+        json images
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+
+    %% Tables Commandes
+    orders {
+        int id PK
+        int user_id FK
+        string order_number UK
+        enum status "pending,processing,shipped,delivered,cancelled"
+        decimal subtotal
+        decimal tax_amount
+        decimal shipping_cost
+        decimal total_amount
+        json shipping_address
+        json billing_address
+        datetime created_at
+        datetime updated_at
+    }
+
+    order_items {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+        decimal total_price
+    }
+
+    %% Tables Panier
+    cart_items {
+        int id PK
+        int user_id FK
+        int product_id FK
+        int quantity
+        datetime created_at
+        datetime updated_at
+    }
+
+    %% Tables Promotions
+    promotions {
+        int id PK
+        string name
+        string code UK
+        enum type "percentage,fixed_amount"
+        decimal value
+        decimal minimum_amount
+        datetime start_date
+        datetime end_date
+        boolean is_active
+        int usage_limit
+        int usage_count
+    }
+
+    %% Tables Paramètres
+    settings {
+        int id PK
+        string key UK
+        text value
+        string description
+        datetime updated_at
+    }
+
+    %% Tables Statistiques/Logs
+    user_sessions {
+        int id PK
+        int user_id FK
+        string session_token
+        datetime created_at
+        datetime expires_at
+    }
+
+    notifications {
+        int id PK
+        int user_id FK
+        string title
+        text message
+        enum type "appointment,order,promotion,system"
+        boolean is_read
+        datetime created_at
+    }
+
+    %% Relations
+    users ||--o{ appointments : "client"
+    users ||--o{ orders : "places"
+    users ||--o{ cart_items : "has"
+    users ||--o{ notifications : "receives"
+    users ||--o{ user_sessions : "has"
+    users ||--o| employees : "is"
+
+    service_categories ||--o{ services : "contains"
+    services ||--o{ appointments : "booked"
+    services ||--o{ employee_services : "performed_by"
+
+    employees ||--o{ appointments : "handles"
+    employees ||--o{ employee_services : "can_perform"
+
+    product_categories ||--o{ products : "contains"
+    products ||--o{ order_items : "ordered"
+    products ||--o{ cart_items : "in_cart"
+
+    orders ||--o{ order_items : "contains"
