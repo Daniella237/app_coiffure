@@ -83,4 +83,62 @@ class AppointmentRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getWeeklyAppointments(int $weeks = 4): array
+    {
+        $connection = $this->getEntityManager()->getConnection();
+        
+        $sql = "
+            SELECT 
+                DATE(a.appointment_date) as week_start, 
+                COUNT(a.id) as count
+            FROM appointments a
+            WHERE a.appointment_date >= :start_date
+            GROUP BY DATE(a.appointment_date)
+            ORDER BY week_start ASC
+        ";
+        
+        $stmt = $connection->prepare($sql);
+        $stmt->bindValue('start_date', new \DateTime('-' . $weeks . ' weeks'), \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
+        $result = $stmt->executeQuery();
+        
+        return $result->fetchAllAssociative();
+    }
+
+    public function getTotalSpentByUser($user): float
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('SUM(a.price) as total')
+            ->where('a.client = :user')
+            ->andWhere('a.status != :cancelled')
+            ->setParameter('user', $user)
+            ->setParameter('cancelled', Appointment::STATUS_CANCELLED);
+
+        $result = $qb->getQuery()->getSingleResult();
+        return $result['total'] ? (float) $result['total'] : 0.0;
+    }
+
+    public function getTotalSpentByUserCompleted($user): float
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('SUM(a.price) as total')
+            ->where('a.client = :user')
+            ->andWhere('a.status = :completed')
+            ->setParameter('user', $user)
+            ->setParameter('completed', Appointment::STATUS_COMPLETED);
+
+        $result = $qb->getQuery()->getSingleResult();
+        return $result['total'] ? (float) $result['total'] : 0.0;
+    }
+
+    public function getTotalRevenueFromCompleted(): float
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('SUM(a.price) as total')
+            ->where('a.status = :completed')
+            ->setParameter('completed', Appointment::STATUS_COMPLETED);
+
+        $result = $qb->getQuery()->getSingleResult();
+        return $result['total'] ? (float) $result['total'] : 0.0;
+    }
 } 

@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Rendez-vous | {{ employee.user.firstName }} {{ employee.user.lastName }}{% endblock %}
+
+{% block body %}
+    <header class="bg-gradient-to-r from-green-500 to-blue-600 text-white py-5 shadow-lg">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-semibold">👩‍💼 Espace Employé - {{ employee.user.firstName }} {{ employee.user.lastName }}</h1>
+                <nav class="hidden md:flex gap-4 items-center">
+                    <a href="{{ path('employee_dashboard') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Tableau de bord</a>
+                    <a href="{{ path('employee_appointments') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Mes Rendez-vous</a>
+                    <a href="{{ path('admin_logout') }}" class="px-3 py-2 rounded-lg bg-white/20 border border-white/30">Déconnexion</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="bg-gray-50 min-h-screen">
+        <div class="max-w-7xl mx-auto px-5 py-8">
+            <!-- Messages flash -->
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            <!-- En-tête de page -->
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Modifier le Rendez-vous</h1>
+                <div class="flex gap-2">
+                    <a href="{{ path('employee_appointment_show', {'id': appointment.id}) }}" class="btn btn-secondary">
+                        ← Retour au détail
+                    </a>
+                    <a href="{{ path('employee_appointments') }}" class="btn btn-secondary">
+                        Retour à la liste
+                    </a>
+                </div>
+            </div>
+
+            <!-- Formulaire de modification -->
+            <div class="card">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4">
+                    <h3 class="text-xl font-semibold">Modifier le Rendez-vous</h3>
+                </div>
+                <div class="p-6">
+                    <form method="POST" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="appointment_date" class="form-label asterisk-red">Date</label>
+                                <input type="date" id="appointment_date" name="appointment[date]" 
+                                       value="{{ appointment.appointmentDate|date('Y-m-d') }}" 
+                                       required class="form-input">
+                            </div>
+                            <div>
+                                <label for="appointment_time" class="form-label asterisk-red">Heure</label>
+                                <input type="time" id="appointment_time" name="appointment[time]" 
+                                       value="{{ appointment.appointmentDate|date('H:i') }}" 
+                                       required class="form-input">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="appointment_status" class="form-label asterisk-red">Statut</label>
+                            <select id="appointment_status" name="appointment[status]" required class="form-input">
+                                <option value="pending" {{ appointment.status == 'pending' ? 'selected' : '' }}>En attente</option>
+                                <option value="confirmed" {{ appointment.status == 'confirmed' ? 'selected' : '' }}>Confirmé</option>
+                                <option value="completed" {{ appointment.status == 'completed' ? 'selected' : '' }}>Terminé</option>
+                                <option value="cancelled" {{ appointment.status == 'cancelled' ? 'selected' : '' }}>Annulé</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="appointment_notes" class="form-label">Notes</label>
+                            <textarea id="appointment_notes" name="appointment[notes]" rows="4" 
+                                      class="form-input">{{ appointment.notes }}</textarea>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button type="submit" class="btn btn-primary">
+                                Enregistrer les modifications
+                            </button>
+                            <a href="{{ path('employee_appointment_show', {'id': appointment.id}) }}" class="btn btn-secondary">
+                                Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Informations en lecture seule -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <!-- Client (lecture seule) -->
+                <div class="card">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-4">
+                        <h3 class="text-xl font-semibold">Client</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Nom:</span>
+                                <span class="font-semibold">{{ appointment.client.firstName }} {{ appointment.client.lastName }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Email:</span>
+                                <span class="font-semibold">{{ appointment.client.email }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Téléphone:</span>
+                                <span class="font-semibold">{{ appointment.client.phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service (lecture seule) -->
+                <div class="card">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-4">
+                        <h3 class="text-xl font-semibold">Service</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Service:</span>
+                                <span class="font-semibold">{{ appointment.service.name }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Prix:</span>
+                                <span class="font-semibold text-green-600">{{ appointment.price }}€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Durée:</span>
+                                <span class="font-semibold">{{ appointment.durationMinutes }} minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %} 

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon de Livraison #{{ order.orderNumber }} | Salon de Beauté</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .delivery-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #28a745;
+        }
+
+        .company-info {
+            flex: 1;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .company-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .delivery-info {
+            text-align: right;
+        }
+
+        .delivery-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .delivery-number {
+            font-size: 18px;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .delivery-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .addresses-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .address-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-row {
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .items-table th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+
+        .items-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .item-quantity {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .signature-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .signature-box {
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #333;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .signature-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .delivery-notes {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .delivery-notes h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .delivery-notes ul {
+            margin-left: 20px;
+        }
+
+        .delivery-notes li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media print {
+            body {
+                font-size: 12px;
+            }
+            
+            .delivery-container {
+                padding: 20px;
+            }
+            
+            .company-name {
+                font-size: 24px;
+            }
+            
+            .delivery-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="delivery-container">
+        <div class="delivery-header">
+            <div class="company-info">
+                <div class="company-name">Salon de Beauté Glowly</div>
+                <div class="company-details">
+                    123 Rue de la Beauté<br>
+                    75001 Paris, France<br>
+                    Tél: +33 1 23 45 67 89<br>
+                    Email: contact@glowly.fr
+                </div>
+            </div>
+            <div class="delivery-info">
+                <div class="delivery-title">BON DE LIVRAISON</div>
+                <div class="delivery-number">#{{ order.orderNumber }}</div>
+                <div class="delivery-date">Date: {{ order.createdAt|date('d/m/Y') }}</div>
+            </div>
+        </div>
+
+        <div class="addresses-section">
+            <div class="address-box">
+                <div class="section-title">Expéditeur</div>
+                <div class="info-value">
+                    Salon de Beauté Glowly<br>
+                    123 Rue de la Beauté<br>
+                    75001 Paris, France<br>
+                    Tél: +33 1 23 45 67 89
+                </div>
+            </div>
+
+            <div class="address-box">
+                <div class="section-title">Destinataire</div>
+                <div class="info-row">
+                    <div class="info-label">Nom :</div>
+                    <div class="info-value">{{ order.user.firstName }} {{ order.user.lastName }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email :</div>
+                    <div class="info-value">{{ order.user.email }}</div>
+                </div>
+                {% if order.user.phone %}
+                <div class="info-row">
+                    <div class="info-label">Téléphone :</div>
+                    <div class="info-value">{{ order.user.phone }}</div>
+                </div>
+                {% endif %}
+                {% if order.shippingAddress %}
+                <div class="info-row">
+                    <div class="info-label">Adresse :</div>
+                    <div class="info-value">
+                        {{ order.shippingAddress.street }}<br>
+                        {{ order.shippingAddress.postalCode }} {{ order.shippingAddress.city }}<br>
+                        {{ order.shippingAddress.country }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="delivery-notes">
+            <h4>📋 Instructions de livraison</h4>
+            <ul>
+                <li>Vérifiez l'état des produits avant signature</li>
+                <li>En cas de dommage, refusez le colis et contactez-nous immédiatement</li>
+                <li>Conservez ce bon de livraison comme justificatif</li>
+                <li>Pour toute question : +33 1 23 45 67 89</li>
+            </ul>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>État</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderItems %}
+                    <tr>
+                        <td class="item-name">{{ item.product.name }}</td>
+                        <td class="item-quantity">{{ item.quantity }}</td>
+                        <td>✅ Conforme</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <div class="signature-label">Signature du livreur</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <div class="signature-label">Signature du destinataire</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Merci de votre confiance !<br>
+            Pour toute question, contactez-nous au +33 1 23 45 67 89 ou par email à contact@glowly.fr</p>
+            <p>Ce bon de livraison est généré automatiquement le {{ "now"|date('d/m/Y à H:i') }}</p>
+        </div>
+    </div>
+
+    <script>
+        // Impression automatique
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html> 

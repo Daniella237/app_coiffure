@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Rendez-vous | {{ employee.user.firstName }} {{ employee.user.lastName }}{% endblock %}
+
+{% block body %}
+    <header class="bg-gradient-to-r from-green-500 to-blue-600 text-white py-5 shadow-lg">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-semibold">👩‍💼 Espace Employé - {{ employee.user.firstName }} {{ employee.user.lastName }}</h1>
+                <nav class="hidden md:flex gap-4 items-center">
+                    <a href="{{ path('employee_dashboard') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Tableau de bord</a>
+                    <a href="{{ path('employee_appointments') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Mes Rendez-vous</a>
+                    <a href="{{ path('admin_logout') }}" class="px-3 py-2 rounded-lg bg-white/20 border border-white/30">Déconnexion</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="bg-gray-50 min-h-screen">
+        <div class="max-w-7xl mx-auto px-5 py-8">
+            <!-- Messages flash -->
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            <!-- En-tête de page -->
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Détail du Rendez-vous</h1>
+                <div class="flex gap-2">
+                    <a href="{{ path('employee_appointments') }}" class="btn btn-secondary">
+                        ← Retour à la liste
+                    </a>
+                    {% if appointment.status in ['pending', 'confirmed'] %}
+                        <a href="{{ path('employee_appointment_edit', {'id': appointment.id}) }}" class="btn btn-primary">
+                            Modifier
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Informations du rendez-vous -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Détails du rendez-vous -->
+                <div class="card">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4">
+                        <h3 class="text-xl font-semibold">Informations du Rendez-vous</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Statut:</span>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                    {% if appointment.status == 'completed' %}bg-green-100 text-green-800
+                                    {% elseif appointment.status == 'confirmed' %}bg-blue-100 text-blue-800
+                                    {% elseif appointment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elseif appointment.status == 'cancelled' %}bg-red-100 text-red-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ appointment.status|upper }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Date et heure:</span>
+                                <span class="font-semibold">{{ appointment.appointmentDate|date('d/m/Y à H:i') }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Durée:</span>
+                                <span class="font-semibold">{{ appointment.durationMinutes }} minutes</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Prix:</span>
+                                <span class="font-semibold text-green-600">{{ appointment.price }}€</span>
+                            </div>
+                            {% if appointment.notes %}
+                                <div class="border-t pt-4">
+                                    <span class="text-gray-600 font-medium block mb-2">Notes:</span>
+                                    <p class="text-gray-800 bg-gray-50 p-3 rounded-lg">{{ appointment.notes }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations du client -->
+                <div class="card">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-4">
+                        <h3 class="text-xl font-semibold">Informations du Client</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Nom:</span>
+                                <span class="font-semibold">{{ appointment.client.firstName }} {{ appointment.client.lastName }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Email:</span>
+                                <span class="font-semibold">{{ appointment.client.email }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">Téléphone:</span>
+                                <span class="font-semibold">{{ appointment.client.phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service -->
+            <div class="card mt-8">
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-4">
+                    <h3 class="text-xl font-semibold">Service</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Service:</span>
+                            <span class="font-semibold">{{ appointment.service.name }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Catégorie:</span>
+                            <span class="font-semibold">{{ appointment.service.category.name }}</span>
+                        </div>
+                        {% if appointment.service.description %}
+                            <div class="border-t pt-4">
+                                <span class="text-gray-600 font-medium block mb-2">Description:</span>
+                                <p class="text-gray-800 bg-gray-50 p-3 rounded-lg">{{ appointment.service.description }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %} 

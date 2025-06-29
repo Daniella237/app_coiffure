@@ -1,0 +1,271 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Planning - {{ employee.user.firstName }} {{ employee.user.lastName }}{% endblock %}
+
+{% block content %}
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Messages flash -->
+        <div class="space-y-3">
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- En-tête de page -->
+        <div class="flex justify-between items-center pb-6 border-b-2 border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-800">📅 Planning de l'employé</h1>
+            <a href="{{ path('admin_employees') }}" class="btn-secondary">
+                ← Retour aux employés
+            </a>
+        </div>
+
+        <!-- Informations de l'employé -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center gap-6 mb-6">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                    {{ employee.user.firstName|first }}{{ employee.user.lastName|first }}
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ employee.user.firstName }} {{ employee.user.lastName }}</h2>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase
+                        {% if employee.isAvailable %}
+                            bg-green-100 text-green-800
+                        {% else %}
+                            bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ employee.isAvailable ? 'Disponible' : 'Indisponible' }}
+                    </span>
+                    {% if employee.specialties %}
+                        <div class="mt-3 text-gray-600 italic">
+                            {{ employee.specialties }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Planning des rendez-vous -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-8 pb-4 border-b border-gray-200">
+                Rendez-vous programmés ({{ appointments|length }})
+            </h3>
+
+            {% if appointments|length > 0 %}
+                <div class="space-y-4">
+                    {% for appointment in appointments %}
+                        <div class="border border-gray-200 rounded-lg p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="text-lg font-semibold text-gray-800">
+                                    {{ appointment.appointmentDate|date('l j F Y', 'Europe/Paris')|capitalize }}
+                                </div>
+                                <div class="flex gap-3 items-center">
+                                    <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-xs font-semibold">
+                                        {{ appointment.appointmentDate|date('H:i') }}
+                                    </span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase
+                                        {% if appointment.status == 'confirmed' %}
+                                            bg-green-100 text-green-800
+                                        {% elseif appointment.status == 'pending' %}
+                                            bg-yellow-100 text-yellow-800
+                                        {% elseif appointment.status == 'cancelled' %}
+                                            bg-red-100 text-red-800
+                                        {% else %}
+                                            bg-gray-100 text-gray-800
+                                        {% endif %}">
+                                        {{ appointment.status }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Client</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.client.firstName }} {{ appointment.client.lastName }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Service</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.service.name }}
+                                        {% if appointment.service.category %}
+                                            <br><span class="text-sm text-gray-500">{{ appointment.service.category.name }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Durée</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.service.durationMinutes }} minutes
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Prix</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.service.price }}€
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if appointment.notes %}
+                                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Notes</div>
+                                    <div class="font-medium text-gray-800">{{ appointment.notes }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- État vide -->
+                <div class="text-center py-16 px-6">
+                    <div class="text-5xl mb-5 opacity-50">📅</div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucun rendez-vous programmé</h3>
+                    <p class="text-gray-500">Cet employé n'a pas encore de rendez-vous dans son planning.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %} 
+
+{% block title %}Planning - {{ employee.user.firstName }} {{ employee.user.lastName }}{% endblock %}
+
+{% block content %}
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Messages flash -->
+        <div class="space-y-3">
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- En-tête de page -->
+        <div class="flex justify-between items-center pb-6 border-b-2 border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-800">📅 Planning de l'employé</h1>
+            <a href="{{ path('admin_employees') }}" class="btn-secondary">
+                ← Retour aux employés
+            </a>
+        </div>
+
+        <!-- Informations de l'employé -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center gap-6 mb-6">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                    {{ employee.user.firstName|first }}{{ employee.user.lastName|first }}
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ employee.user.firstName }} {{ employee.user.lastName }}</h2>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase
+                        {% if employee.isAvailable %}
+                            bg-green-100 text-green-800
+                        {% else %}
+                            bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ employee.isAvailable ? 'Disponible' : 'Indisponible' }}
+                    </span>
+                    {% if employee.specialties %}
+                        <div class="mt-3 text-gray-600 italic">
+                            {{ employee.specialties }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Planning des rendez-vous -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-8 pb-4 border-b border-gray-200">
+                Rendez-vous programmés ({{ appointments|length }})
+            </h3>
+
+            {% if appointments|length > 0 %}
+                <div class="space-y-4">
+                    {% for appointment in appointments %}
+                        <div class="border border-gray-200 rounded-lg p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="text-lg font-semibold text-gray-800">
+                                    {{ appointment.appointmentDate|date('l j F Y', 'Europe/Paris')|capitalize }}
+                                </div>
+                                <div class="flex gap-3 items-center">
+                                    <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-xs font-semibold">
+                                        {{ appointment.appointmentDate|date('H:i') }}
+                                    </span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase
+                                        {% if appointment.status == 'confirmed' %}
+                                            bg-green-100 text-green-800
+                                        {% elseif appointment.status == 'pending' %}
+                                            bg-yellow-100 text-yellow-800
+                                        {% elseif appointment.status == 'cancelled' %}
+                                            bg-red-100 text-red-800
+                                        {% else %}
+                                            bg-gray-100 text-gray-800
+                                        {% endif %}">
+                                        {{ appointment.status }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Client</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.client.firstName }} {{ appointment.client.lastName }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Service</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.service.name }}
+                                        {% if appointment.service.category %}
+                                            <br><span class="text-sm text-gray-500">{{ appointment.service.category.name }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Durée</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.service.durationMinutes }} minutes
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Prix</div>
+                                    <div class="font-medium text-gray-800">
+                                        {{ appointment.service.price }}€
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if appointment.notes %}
+                                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Notes</div>
+                                    <div class="font-medium text-gray-800">{{ appointment.notes }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- État vide -->
+                <div class="text-center py-16 px-6">
+                    <div class="text-5xl mb-5 opacity-50">📅</div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucun rendez-vous programmé</h3>
+                    <p class="text-gray-500">Cet employé n'a pas encore de rendez-vous dans son planning.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %} 

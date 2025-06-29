@@ -1,0 +1,22 @@
+{
+  "name": "app_coiffure",
+  "version": "1.0.0",
+  "description": "## 📋 Résumé des entités créées",
+  "main": "tailwind.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "tailwindcss -i ./assets/styles/app.css -o ./public/styles/app.css --watch",
+    "build:prod": "tailwindcss -i ./assets/styles/app.css -o ./public/styles/app.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11"
+  }
+}

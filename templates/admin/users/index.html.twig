@@ -1,0 +1,167 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Utilisateurs | Admin{% endblock %}
+
+{% block content %}
+    <div class="space-y-6">
+        <!-- Messages flash -->
+        <div class="space-y-3">
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- En-tête de page -->
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-800">👥 Gestion des Utilisateurs</h1>
+        </div>
+
+        <!-- Filtres de recherche -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <form method="GET" class="flex gap-4 items-center flex-wrap">
+                <input type="text" name="search" value="{{ search }}" 
+                       placeholder="Rechercher par nom ou email..." 
+                       class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg text-sm focus:border-indigo-500 focus:outline-none">
+                <button type="submit" class="btn btn-primary">
+                    Rechercher
+                </button>
+                {% if search %}
+                    <a href="{{ path('admin_users') }}" class="btn btn-secondary">
+                        Effacer
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Conteneur des utilisateurs -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">Liste des Utilisateurs ({{ users|length }})</h3>
+            </div>
+            
+            {% if users|length > 0 %}
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Utilisateur</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Email</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Téléphone</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date d'inscription</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Total prestations</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Statut</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for user in users %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                                                {{ user.firstName|first }}{{ user.lastName|first }}
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <div class="font-semibold text-gray-800">
+                                                    {{ user.firstName }} {{ user.lastName }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">{{ user.email }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ user.phone ?: 'Non renseigné' }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ user.createdAt|date('d/m/Y') }}</td>
+                                    <td class="px-6 py-4">
+                                        {% if user.totalSpent is defined and user.totalSpent > 0 %}
+                                            <span class="font-semibold text-green-600">
+                                                {{ user.totalSpent|number_format(2, ',', ' ') }}€
+                                            </span>
+                                        {% else %}
+                                            <span class="text-gray-500 italic">Aucune prestation</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase
+                                            {% if user.isActive %}
+                                                bg-green-100 text-green-800
+                                            {% else %}
+                                                bg-red-100 text-red-800
+                                            {% endif %}">
+                                            {{ user.isActive ? 'Actif' : 'Inactif' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex gap-2">
+                                            <a href="{{ path('admin_user_show', {id: user.id}) }}" 
+                                               class="btn btn-info-small">
+                                                Voir
+                                            </a>
+                                            <form method="POST" action="{{ path('admin_user_toggle_status', {id: user.id}) }}" class="inline">
+                                                <button type="submit" class="btn btn-warning-small">
+                                                    {{ user.isActive ? 'Désactiver' : 'Activer' }}
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ path('admin_user_delete', {id: user.id}) }}" 
+                                                  class="inline" 
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                                                <button type="submit" class="btn btn-danger-small">
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if totalPages > 1 %}
+                    <div class="flex justify-center gap-2 p-6 bg-gray-50">
+                        {% if currentPage > 1 %}
+                            <a href="?page={{ currentPage - 1 }}{% if search %}&search={{ search }}{% endif %}" 
+                               class="px-3 py-2 border border-gray-300 rounded-lg text-indigo-600 hover:bg-gray-100 transition-colors">
+                                Précédent
+                            </a>
+                        {% endif %}
+                        
+                        {% for page in 1..totalPages %}
+                            {% if page == currentPage %}
+                                <span class="px-3 py-2 bg-indigo-600 text-white border border-indigo-600 rounded-lg">
+                                    {{ page }}
+                                </span>
+                            {% else %}
+                                <a href="?page={{ page }}{% if search %}&search={{ search }}{% endif %}" 
+                                   class="px-3 py-2 border border-gray-300 rounded-lg text-indigo-600 hover:bg-gray-100 transition-colors">
+                                    {{ page }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if currentPage < totalPages %}
+                            <a href="?page={{ currentPage + 1 }}{% if search %}&search={{ search }}{% endif %}" 
+                               class="px-3 py-2 border border-gray-300 rounded-lg text-indigo-600 hover:bg-gray-100 transition-colors">
+                                Suivant
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <!-- État vide -->
+                <div class="text-center py-16 px-6">
+                    <div class="text-5xl mb-5 opacity-50">👥</div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucun utilisateur trouvé</h3>
+                    <p class="text-gray-500">Aucun utilisateur ne correspond aux critères de recherche.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %} 

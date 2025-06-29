@@ -1,0 +1,140 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Statistiques | Admin{% endblock %}
+
+{% block content %}
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Statistiques</h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="stat-card border-blue-500">
+            <div class="stat-number">{{ stats.total_appointments }}</div>
+            <div class="stat-label">Total Rendez-vous</div>
+        </div>
+        <div class="stat-card border-yellow-500">
+            <div class="stat-number">{{ stats.total_orders }}</div>
+            <div class="stat-label">Total Commandes</div>
+        </div>
+        <div class="stat-card border-green-500">
+            <div class="stat-number">{{ stats.total_revenue|number_format(0, ',', ' ') }}€</div>
+            <div class="stat-label">Chiffre d'Affaires Total</div>
+            <div class="text-xs text-gray-500 mt-2">
+                Prestations: {{ stats.appointments_revenue|number_format(0, ',', ' ') }}€<br>
+                Commandes: {{ stats.orders_revenue|number_format(0, ',', ' ') }}€
+            </div>
+        </div>
+        <div class="stat-card border-red-500">
+            <div class="stat-number">{{ stats.active_services }}</div>
+            <div class="stat-label">Services Actifs</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="card p-6">
+            <div class="text-xl font-semibold text-gray-800 mb-5 text-center">Rendez-vous par semaine</div>
+            <div class="relative h-80">
+                <canvas id="weeklyAppointmentsChart"></canvas>
+            </div>
+        </div>
+        <div class="card p-6">
+            <div class="text-xl font-semibold text-gray-800 mb-5 text-center">Panier moyen</div>
+            <div class="relative h-80">
+                <canvas id="averageCartChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="card p-6">
+            <div class="text-xl font-semibold text-gray-800 mb-5 pb-3 border-b-2 border-gray-100">Prestations les plus réservées</div>
+            {% if topServices|length > 0 %}
+                {% for service in topServices %}
+                    <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+                        <div class="flex items-center flex-1">
+                            <div class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold mr-3">{{ loop.index }}</div>
+                            <div class="font-medium text-gray-800">{{ service.name }}</div>
+                        </div>
+                        <div class="font-semibold text-blue-500">{{ service.bookingCount }} réservations</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-12">
+                    <p class="text-gray-500">Aucune donnée disponible pour cette période</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card p-6">
+            <div class="text-xl font-semibold text-gray-800 mb-5 pb-3 border-b-2 border-gray-100">Produits les plus vendus</div>
+            {% if topProducts|length > 0 %}
+                {% for product in topProducts %}
+                    <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+                        <div class="flex items-center flex-1">
+                            <div class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold mr-3">{{ loop.index }}</div>
+                            <div class="font-medium text-gray-800">{{ product.name }}</div>
+                        </div>
+                        <div class="font-semibold text-blue-500">{{ product.salesCount }} ventes</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-12">
+                    <p class="text-gray-500">Aucune donnée disponible pour cette période</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Données pour les graphiques (à remplacer par les vraies données)
+        const weeklyData = {
+            labels: ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'],
+            datasets: [{
+                label: 'Rendez-vous',
+                data: [12, 19, 15, 22],
+                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 2
+            }]
+        };
+
+        const averageCartData = {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+            datasets: [{
+                label: 'Panier moyen (€)',
+                data: [45, 52, 48, 58, 55, 62],
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                borderWidth: 2
+            }]
+        };
+
+        // Configuration des graphiques
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        };
+
+        // Création des graphiques
+        new Chart(document.getElementById('weeklyAppointmentsChart'), {
+            type: 'line',
+            data: weeklyData,
+            options: chartOptions
+        });
+
+        new Chart(document.getElementById('averageCartChart'), {
+            type: 'line',
+            data: averageCartData,
+            options: chartOptions
+        });
+    </script>
+{% endblock %} 

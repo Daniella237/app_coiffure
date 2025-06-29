@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture #{{ order.orderNumber }} | Salon de Beauté</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .company-info {
+            flex: 1;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .company-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .invoice-info {
+            text-align: right;
+        }
+
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .invoice-number {
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .invoice-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .customer-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .customer-info,
+        .billing-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-row {
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .items-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .items-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .item-price {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .summary-section {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .summary-table {
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .summary-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .summary-table .total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #28a745;
+            border-top: 2px solid #dee2e6;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .payment-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .payment-info h4 {
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        @media print {
+            body {
+                font-size: 12px;
+            }
+            
+            .invoice-container {
+                padding: 20px;
+            }
+            
+            .company-name {
+                font-size: 24px;
+            }
+            
+            .invoice-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <div class="company-info">
+                <div class="company-name">Salon de Beauté Glowly</div>
+                <div class="company-details">
+                    123 Rue de la Beauté<br>
+                    75001 Paris, France<br>
+                    Tél: +33 1 23 45 67 89<br>
+                    Email: contact@glowly.fr<br>
+                    SIRET: 123 456 789 00012
+                </div>
+            </div>
+            <div class="invoice-info">
+                <div class="invoice-title">FACTURE</div>
+                <div class="invoice-number">#{{ order.orderNumber }}</div>
+                <div class="invoice-date">Date: {{ order.createdAt|date('d/m/Y') }}</div>
+            </div>
+        </div>
+
+        <div class="customer-section">
+            <div class="customer-info">
+                <div class="section-title">Client</div>
+                <div class="info-row">
+                    <div class="info-label">Nom :</div>
+                    <div class="info-value">{{ order.user.firstName }} {{ order.user.lastName }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email :</div>
+                    <div class="info-value">{{ order.user.email }}</div>
+                </div>
+                {% if order.user.phone %}
+                <div class="info-row">
+                    <div class="info-label">Téléphone :</div>
+                    <div class="info-value">{{ order.user.phone }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if order.shippingAddress %}
+            <div class="billing-info">
+                <div class="section-title">Adresse de livraison</div>
+                <div class="info-value">
+                    {{ order.shippingAddress.street }}<br>
+                    {{ order.shippingAddress.postalCode }} {{ order.shippingAddress.city }}<br>
+                    {{ order.shippingAddress.country }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="payment-info">
+            <h4>Informations de paiement</h4>
+            <p>Commande payée le {{ order.createdAt|date('d/m/Y') }}<br>
+            Statut: 
+            {% if order.status == 'pending' %}En attente
+            {% elseif order.status == 'processing' %}En préparation
+            {% elseif order.status == 'shipped' %}Expédiée
+            {% elseif order.status == 'delivered' %}Livrée
+            {% elseif order.status == 'cancelled' %}Annulée
+            {% else %}{{ order.status }}{% endif %}</p>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix unitaire HT</th>
+                    <th>Total HT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderItems %}
+                    <tr>
+                        <td class="item-name">{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="item-price">{{ item.unitPrice }}€</td>
+                        <td class="item-price">{{ item.totalPrice }}€</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="summary-section">
+            <table class="summary-table">
+                <tr>
+                    <td>Sous-total HT</td>
+                    <td style="text-align: right;">{{ order.subtotal }}€</td>
+                </tr>
+                {% if order.taxAmount and order.taxAmount > 0 %}
+                <tr>
+                    <td>TVA (20%)</td>
+                    <td style="text-align: right;">{{ order.taxAmount }}€</td>
+                </tr>
+                {% endif %}
+                {% if order.shippingCost and order.shippingCost > 0 %}
+                <tr>
+                    <td>Frais de livraison</td>
+                    <td style="text-align: right;">{{ order.shippingCost }}€</td>
+                </tr>
+                {% endif %}
+                <tr class="total">
+                    <td>Total TTC</td>
+                    <td style="text-align: right;">{{ order.totalAmount }}€</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Merci de votre confiance !<br>
+            Pour toute question, contactez-nous au +33 1 23 45 67 89 ou par email à contact@glowly.fr</p>
+            <p>Cette facture est générée automatiquement le {{ "now"|date('d/m/Y à H:i') }}</p>
+        </div>
+    </div>
+
+    <script>
+        // Impression automatique
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html> 

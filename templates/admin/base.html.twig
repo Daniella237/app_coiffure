@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <header class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-5 shadow-lg">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-semibold">👑 Espace Administrateur</h1>
+                <nav class="hidden md:flex gap-4 items-center">
+                    <a href="{{ path('admin_dashboard') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Tableau de bord</a>
+                    <a href="{{ path('admin_appointments') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Rendez-vous</a>
+                    <a href="{{ path('admin_services') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Services</a>
+                    <a href="{{ path('admin_products') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Produits</a>
+                    <a href="{{ path('admin_orders') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Commandes</a>
+                    <a href="{{ path('admin_statistics') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Statistiques</a>
+                    <a href="{{ path('admin_users') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Utilisateurs</a>
+                    <a href="{{ path('admin_employees') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Employés</a>
+                    <a href="{{ path('admin_settings') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Paramètres</a>
+                    <a href="{{ path('app_home') }}" class="px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">Voir le site</a>
+                    <a href="{{ path('admin_logout') }}" class="px-3 py-2 rounded-lg bg-white/20 border border-white/30">Déconnexion</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="bg-gray-50 min-h-screen">
+        <div class="max-w-7xl mx-auto px-5 py-8">
+            {% block flash_messages %}
+                {% for message in app.flashes('success') %}
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('error') %}
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endblock %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+{% endblock %} 

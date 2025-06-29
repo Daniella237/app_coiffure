@@ -1,0 +1,441 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier Employé - Administration{% endblock %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto space-y-6">
+        <!-- Messages flash -->
+        <div class="space-y-3">
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- En-tête de page -->
+        <div class="flex justify-between items-center pb-6 border-b-2 border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-800">✏️ Modifier l'Employé</h1>
+            <a href="{{ path('admin_employees') }}" class="btn-secondary">
+                ← Retour aux employés
+            </a>
+        </div>
+
+        <!-- Informations actuelles -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Informations actuelles</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Nom complet</div>
+                    <div class="font-medium text-gray-800">{{ employee.user.firstName }} {{ employee.user.lastName }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Email</div>
+                    <div class="font-medium text-gray-800">{{ employee.user.email }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Téléphone</div>
+                    <div class="font-medium text-gray-800">{{ employee.user.phone ?: 'Non renseigné' }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Statut</div>
+                    <div class="font-medium text-gray-800">{{ employee.isAvailable ? 'Disponible' : 'Indisponible' }}</div>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Spécialités</div>
+                    <div class="font-medium text-gray-800">{{ employee.specialties ?: 'Aucune spécialité renseignée' }}</div>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Rôles actuels</div>
+                    <div class="flex flex-wrap gap-2">
+                        {% set roleLabels = {
+                            'ROLE_USER': 'Utilisateur',
+                            'ROLE_EMPLOYEE': 'Employé',
+                            'ROLE_ADMIN': 'Administrateur',
+                            'ROLE_MANAGER': 'Manager'
+                        } %}
+                        {% for role in employee.user.roles %}
+                            {% if role != 'ROLE_USER' %}
+                                <span class="px-2 py-1 bg-blue-500 text-white rounded text-xs">
+                                    {{ roleLabels[role] ?: role }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-gray-500 italic text-sm">Aucun rôle spécial</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de modification -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Modifier les informations</h2>
+            
+            <form method="POST" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="first_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Prénom <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="first_name" name="first_name" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.firstName }}" required>
+                    </div>
+
+                    <div>
+                        <label for="last_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nom <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="last_name" name="last_name" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.lastName }}" required>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" id="email" name="email" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.email }}" required>
+                        <p class="text-xs text-gray-500 mt-1">L'email servira d'identifiant de connexion</p>
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Téléphone</label>
+                        <input type="tel" id="phone" name="phone" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.phone }}">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="specialization" class="block text-sm font-semibold text-gray-700 mb-2">Spécialisation</label>
+                        <textarea id="specialization" name="specialization" 
+                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors min-h-[100px] resize-y" 
+                                  placeholder="Décrivez les spécialités et compétences de l'employé...">{{ employee.specialties }}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">Ex: Coiffure, Coloration, Mèches, Lissage, etc.</p>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Nouveau mot de passe</label>
+                        <input type="password" id="password" name="password" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                        <p class="text-xs text-gray-500 mt-1">Laissez vide pour conserver le mot de passe actuel</p>
+                    </div>
+
+                    <div>
+                        <label for="password_confirm" class="block text-sm font-semibold text-gray-700 mb-2">Confirmer le mot de passe</label>
+                        <input type="password" id="password_confirm" name="password_confirm" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">Rôles et accès</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg">
+                                <input type="checkbox" id="role_employee" name="roles[]" value="ROLE_EMPLOYEE" 
+                                       class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mt-1" 
+                                       {{ 'ROLE_EMPLOYEE' in employee.user.roles ? 'checked' : '' }}>
+                                <div>
+                                    <label for="role_employee" class="text-sm font-semibold text-gray-700">Employé</label>
+                                    <p class="text-xs text-gray-500 mt-1">Accès aux rendez-vous et services</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg">
+                                <input type="checkbox" id="role_admin" name="roles[]" value="ROLE_ADMIN" 
+                                       class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mt-1" 
+                                       {{ 'ROLE_ADMIN' in employee.user.roles ? 'checked' : '' }}>
+                                <div>
+                                    <label for="role_admin" class="text-sm font-semibold text-gray-700">Administrateur</label>
+                                    <p class="text-xs text-gray-500 mt-1">Accès complet à l'administration</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg">
+                                <input type="checkbox" id="role_manager" name="roles[]" value="ROLE_MANAGER" 
+                                       class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mt-1" 
+                                       {{ 'ROLE_MANAGER' in employee.user.roles ? 'checked' : '' }}>
+                                <div>
+                                    <label for="role_manager" class="text-sm font-semibold text-gray-700">Manager</label>
+                                    <p class="text-xs text-gray-500 mt-1">Gestion des employés et rapports</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3">
+                            <strong>Note :</strong> L'employé aura automatiquement le rôle ROLE_USER en plus des rôles sélectionnés.
+                        </p>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="is_available" name="is_available" 
+                                   class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
+                                   {{ employee.isAvailable ? 'checked' : '' }}>
+                            <label for="is_available" class="text-sm font-semibold text-gray-700">
+                                Employé disponible
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 ml-8">Cochez cette case si l'employé peut recevoir des rendez-vous</p>
+                    </div>
+                </div>
+
+                <!-- Actions du formulaire -->
+                <div class="flex gap-4 justify-center pt-8 border-t border-gray-200">
+                    <button type="submit" class="btn-primary">
+                        Enregistrer les modifications
+                    </button>
+                    <a href="{{ path('admin_employees') }}" class="btn-secondary">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Validation du formulaire
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password_confirm').value;
+            
+            if (password || passwordConfirm) {
+                if (password !== passwordConfirm) {
+                    e.preventDefault();
+                    alert('Les mots de passe ne correspondent pas.');
+                    return false;
+                }
+                
+                if (password.length > 0 && password.length < 6) {
+                    e.preventDefault();
+                    alert('Le mot de passe doit contenir au moins 6 caractères.');
+                    return false;
+                }
+            }
+        });
+    </script>
+{% endblock %} 
+
+{% block title %}Modifier Employé - Administration{% endblock %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto space-y-6">
+        <!-- Messages flash -->
+        <div class="space-y-3">
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- En-tête de page -->
+        <div class="flex justify-between items-center pb-6 border-b-2 border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-800">✏️ Modifier l'Employé</h1>
+            <a href="{{ path('admin_employees') }}" class="btn-secondary">
+                ← Retour aux employés
+            </a>
+        </div>
+
+        <!-- Informations actuelles -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Informations actuelles</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Nom complet</div>
+                    <div class="font-medium text-gray-800">{{ employee.user.firstName }} {{ employee.user.lastName }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Email</div>
+                    <div class="font-medium text-gray-800">{{ employee.user.email }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Téléphone</div>
+                    <div class="font-medium text-gray-800">{{ employee.user.phone ?: 'Non renseigné' }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Statut</div>
+                    <div class="font-medium text-gray-800">{{ employee.isAvailable ? 'Disponible' : 'Indisponible' }}</div>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Spécialités</div>
+                    <div class="font-medium text-gray-800">{{ employee.specialties ?: 'Aucune spécialité renseignée' }}</div>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Rôles actuels</div>
+                    <div class="flex flex-wrap gap-2">
+                        {% set roleLabels = {
+                            'ROLE_USER': 'Utilisateur',
+                            'ROLE_EMPLOYEE': 'Employé',
+                            'ROLE_ADMIN': 'Administrateur',
+                            'ROLE_MANAGER': 'Manager'
+                        } %}
+                        {% for role in employee.user.roles %}
+                            {% if role != 'ROLE_USER' %}
+                                <span class="px-2 py-1 bg-blue-500 text-white rounded text-xs">
+                                    {{ roleLabels[role] ?: role }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-gray-500 italic text-sm">Aucun rôle spécial</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de modification -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Modifier les informations</h2>
+            
+            <form method="POST" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="first_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Prénom <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="first_name" name="first_name" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.firstName }}" required>
+                    </div>
+
+                    <div>
+                        <label for="last_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nom <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="last_name" name="last_name" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.lastName }}" required>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" id="email" name="email" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.email }}" required>
+                        <p class="text-xs text-gray-500 mt-1">L'email servira d'identifiant de connexion</p>
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Téléphone</label>
+                        <input type="tel" id="phone" name="phone" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ employee.user.phone }}">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="specialization" class="block text-sm font-semibold text-gray-700 mb-2">Spécialisation</label>
+                        <textarea id="specialization" name="specialization" 
+                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors min-h-[100px] resize-y" 
+                                  placeholder="Décrivez les spécialités et compétences de l'employé...">{{ employee.specialties }}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">Ex: Coiffure, Coloration, Mèches, Lissage, etc.</p>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Nouveau mot de passe</label>
+                        <input type="password" id="password" name="password" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                        <p class="text-xs text-gray-500 mt-1">Laissez vide pour conserver le mot de passe actuel</p>
+                    </div>
+
+                    <div>
+                        <label for="password_confirm" class="block text-sm font-semibold text-gray-700 mb-2">Confirmer le mot de passe</label>
+                        <input type="password" id="password_confirm" name="password_confirm" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">Rôles et accès</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg">
+                                <input type="checkbox" id="role_employee" name="roles[]" value="ROLE_EMPLOYEE" 
+                                       class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mt-1" 
+                                       {{ 'ROLE_EMPLOYEE' in employee.user.roles ? 'checked' : '' }}>
+                                <div>
+                                    <label for="role_employee" class="text-sm font-semibold text-gray-700">Employé</label>
+                                    <p class="text-xs text-gray-500 mt-1">Accès aux rendez-vous et services</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg">
+                                <input type="checkbox" id="role_admin" name="roles[]" value="ROLE_ADMIN" 
+                                       class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mt-1" 
+                                       {{ 'ROLE_ADMIN' in employee.user.roles ? 'checked' : '' }}>
+                                <div>
+                                    <label for="role_admin" class="text-sm font-semibold text-gray-700">Administrateur</label>
+                                    <p class="text-xs text-gray-500 mt-1">Accès complet à l'administration</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg">
+                                <input type="checkbox" id="role_manager" name="roles[]" value="ROLE_MANAGER" 
+                                       class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mt-1" 
+                                       {{ 'ROLE_MANAGER' in employee.user.roles ? 'checked' : '' }}>
+                                <div>
+                                    <label for="role_manager" class="text-sm font-semibold text-gray-700">Manager</label>
+                                    <p class="text-xs text-gray-500 mt-1">Gestion des employés et rapports</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3">
+                            <strong>Note :</strong> L'employé aura automatiquement le rôle ROLE_USER en plus des rôles sélectionnés.
+                        </p>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="is_available" name="is_available" 
+                                   class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
+                                   {{ employee.isAvailable ? 'checked' : '' }}>
+                            <label for="is_available" class="text-sm font-semibold text-gray-700">
+                                Employé disponible
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 ml-8">Cochez cette case si l'employé peut recevoir des rendez-vous</p>
+                    </div>
+                </div>
+
+                <!-- Actions du formulaire -->
+                <div class="flex gap-4 justify-center pt-8 border-t border-gray-200">
+                    <button type="submit" class="btn-primary">
+                        Enregistrer les modifications
+                    </button>
+                    <a href="{{ path('admin_employees') }}" class="btn-secondary">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Validation du formulaire
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password_confirm').value;
+            
+            if (password || passwordConfirm) {
+                if (password !== passwordConfirm) {
+                    e.preventDefault();
+                    alert('Les mots de passe ne correspondent pas.');
+                    return false;
+                }
+                
+                if (password.length > 0 && password.length < 6) {
+                    e.preventDefault();
+                    alert('Le mot de passe doit contenir au moins 6 caractères.');
+                    return false;
+                }
+            }
+        });
+    </script>
+{% endblock %} 

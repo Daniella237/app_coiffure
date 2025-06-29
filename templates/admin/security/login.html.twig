@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion Admin | Salon de Beauté{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 p-4">
+    <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="text-center mb-8">
+            <div class="text-5xl mb-3">👑</div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Espace Administrateur</h1>
+            <p class="text-gray-600">Salon de Beauté - Gestion</p>
+        </div>
+
+        {% if error %}
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <form method="post" class="space-y-6">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            
+            <div>
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="_username" value="{{ last_username }}" required autofocus class="form-input">
+            </div>
+
+            <div>
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" id="password" name="_password" required class="form-input">
+            </div>
+
+            <button type="submit" class="w-full btn btn-primary py-3 text-lg font-semibold rounded-lg hover-lift-sm">
+                Se connecter
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

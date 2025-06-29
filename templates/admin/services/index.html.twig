@@ -1,0 +1,109 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Services | Admin{% endblock %}
+
+{% block content %}
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des Services</h1>
+        <a href="{{ path('admin_service_new') }}" class="btn btn-primary">
+            Nouveau Service
+        </a>
+    </div>
+
+    <!-- Statistiques des services -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="stat-card border-blue-500">
+            <div class="stat-number text-blue-500">{{ total_services }}</div>
+            <div class="stat-label">Total Services</div>
+        </div>
+        <div class="stat-card border-green-500">
+            <div class="stat-number text-green-500">{{ active_services }}</div>
+            <div class="stat-label">Services Actifs</div>
+        </div>
+        <div class="stat-card border-yellow-500">
+            <div class="stat-number text-yellow-500">{{ total_categories }}</div>
+            <div class="stat-label">Catégories</div>
+        </div>
+        <div class="stat-card border-purple-500">
+            <div class="stat-number text-purple-500">{{ average_price|number_format(0, ',', ' ') }}€</div>
+            <div class="stat-label">Prix Moyen</div>
+        </div>
+    </div>
+
+    <!-- Services par catégorie -->
+    {% for category in service_categories %}
+        <div class="card overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-4">
+                <h3 class="text-xl font-semibold">{{ category.name }}</h3>
+                <p class="text-blue-100 text-sm">{{ category.description }}</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for service in category.services %}
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 hover-lift">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-2">{{ service.name }}</h4>
+                                    <p class="text-gray-600 text-sm mb-3">{{ service.description }}</p>
+                                </div>
+                                <div class="ml-4">
+                                    {% if service.isActive %}
+                                        <span class="badge badge-success">Actif</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inactif</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Prix:</span>
+                                    <span class="font-semibold text-gray-800">{{ service.price }}€</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Durée:</span>
+                                    <span class="font-semibold text-gray-800">{{ service.durationMinutes }} min</span>
+                                </div>
+                                {% if service.employeeServices|length > 0 %}
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Employés:</span>
+                                        <span class="font-semibold text-gray-800">{{ service.employeeServices|length }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <a href="{{ path('admin_service_edit', {'id': service.id}) }}" class="btn btn-primary btn-sm flex-1">
+                                    Modifier
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="md:col-span-3 text-center py-8 text-gray-500">
+                            <p>Aucun service dans cette catégorie</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card p-12 text-center">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Aucun service disponible</h3>
+            <p class="text-gray-600 mb-8">Commencez par créer votre premier service</p>
+            <a href="{{ path('admin_service_new') }}" class="btn btn-primary">
+                Créer le premier service
+            </a>
+        </div>
+    {% endfor %}
+
+    <!-- Actions rapides -->
+    <div class="card p-6 mt-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Actions Rapides</h3>
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ path('admin_service_new') }}" class="btn btn-primary">
+                Nouveau Service
+            </a>
+        </div>
+    </div>
+{% endblock %} 

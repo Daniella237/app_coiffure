@@ -1,0 +1,223 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Paramètres | Admin{% endblock %}
+
+{% block content %}
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Messages flash -->
+        <div class="space-y-3">
+            {% for message in app.flashes('success') %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- En-tête de page -->
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-800">Paramètres de l'Application</h1>
+        </div>
+
+        <form method="POST" class="space-y-8">
+            <!-- Informations générales -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="mb-6 pb-4 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800">Informations du Salon</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="salon_name" class="block text-sm font-semibold text-gray-700 mb-2">Nom du salon</label>
+                        <input type="text" name="salon_name" id="salon_name" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.salon_name }}" required>
+                    </div>
+                    <div>
+                        <label for="salon_phone" class="block text-sm font-semibold text-gray-700 mb-2">Téléphone</label>
+                        <input type="tel" name="salon_phone" id="salon_phone" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.salon_phone }}" required>
+                    </div>
+                    <div>
+                        <label for="salon_email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                        <input type="email" name="salon_email" id="salon_email" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.salon_email }}" required>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="salon_address" class="block text-sm font-semibold text-gray-700 mb-2">Adresse</label>
+                        <textarea name="salon_address" id="salon_address" 
+                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors min-h-[80px] resize-y" 
+                                  required>{{ settings.salon_address }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horaires d'ouverture -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="mb-6 pb-4 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800">Horaires d'Ouverture</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label for="opening_hours_monday" class="block text-sm font-semibold text-gray-700 mb-2">Lundi</label>
+                        <input type="text" name="opening_hours_monday" id="opening_hours_monday" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.opening_hours_monday }}" placeholder="09:00-18:00">
+                        <p class="text-xs text-gray-500 mt-1">Format: HH:MM-HH:MM ou "Fermé"</p>
+                    </div>
+                    <div>
+                        <label for="opening_hours_tuesday" class="block text-sm font-semibold text-gray-700 mb-2">Mardi</label>
+                        <input type="text" name="opening_hours_tuesday" id="opening_hours_tuesday" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.opening_hours_tuesday }}" placeholder="09:00-18:00">
+                    </div>
+                    <div>
+                        <label for="opening_hours_wednesday" class="block text-sm font-semibold text-gray-700 mb-2">Mercredi</label>
+                        <input type="text" name="opening_hours_wednesday" id="opening_hours_wednesday" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.opening_hours_wednesday }}" placeholder="09:00-18:00">
+                    </div>
+                    <div>
+                        <label for="opening_hours_thursday" class="block text-sm font-semibold text-gray-700 mb-2">Jeudi</label>
+                        <input type="text" name="opening_hours_thursday" id="opening_hours_thursday" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.opening_hours_thursday }}" placeholder="09:00-18:00">
+                    </div>
+                    <div>
+                        <label for="opening_hours_friday" class="block text-sm font-semibold text-gray-700 mb-2">Vendredi</label>
+                        <input type="text" name="opening_hours_friday" id="opening_hours_friday" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.opening_hours_friday }}" placeholder="09:00-18:00">
+                    </div>
+                    <div>
+                        <label for="opening_hours_saturday" class="block text-sm font-semibold text-gray-700 mb-2">Samedi</label>
+                        <input type="text" name="opening_hours_saturday" id="opening_hours_saturday" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.opening_hours_saturday }}" placeholder="09:00-17:00">
+                    </div>
+                    <div>
+                        <label for="opening_hours_sunday" class="block text-sm font-semibold text-gray-700 mb-2">Dimanche</label>
+                        <input type="text" name="opening_hours_sunday" id="opening_hours_sunday" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.opening_hours_sunday }}" placeholder="Fermé">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mode promotion -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="mb-6 pb-4 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800">Mode Promotion</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="promo_mode_enabled" id="promo_mode_enabled" 
+                                   class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
+                                   {{ settings.promo_mode_enabled == '1' ? 'checked' : '' }}>
+                            <label for="promo_mode_enabled" class="text-sm font-semibold text-gray-700">
+                                Activer le mode promotion
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 ml-8">Applique automatiquement une réduction sur tous les produits et services</p>
+                    </div>
+                    <div>
+                        <label for="promo_discount_percentage" class="block text-sm font-semibold text-gray-700 mb-2">Pourcentage de réduction (%)</label>
+                        <input type="number" name="promo_discount_percentage" id="promo_discount_percentage" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.promo_discount_percentage }}" min="1" max="50">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="promo_message" class="block text-sm font-semibold text-gray-700 mb-2">Message de promotion</label>
+                        <textarea name="promo_message" id="promo_message" 
+                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors min-h-[80px] resize-y">{{ settings.promo_message }}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">Message affiché aux clients lors d'une promotion</p>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+                    <h4 class="text-yellow-800 font-semibold mb-3">Aperçu de la promotion</h4>
+                    <p class="text-yellow-700"><strong>Réduction :</strong> {{ settings.promo_discount_percentage }}% sur tout</p>
+                    <p class="text-yellow-700"><strong>Message :</strong> {{ settings.promo_message }}</p>
+                </div>
+            </div>
+
+            <!-- Emails automatiques -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="mb-6 pb-4 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800">Emails Automatiques</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="email_confirmation_enabled" id="email_confirmation_enabled" 
+                                   class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
+                                   {{ settings.email_confirmation_enabled == '1' ? 'checked' : '' }}>
+                            <label for="email_confirmation_enabled" class="text-sm font-semibold text-gray-700">
+                                Confirmation de réservation
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 ml-8">Envoie un email de confirmation après chaque réservation</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="email_reminder_enabled" id="email_reminder_enabled" 
+                                   class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
+                                   {{ settings.email_reminder_enabled == '1' ? 'checked' : '' }}>
+                            <label for="email_reminder_enabled" class="text-sm font-semibold text-gray-700">
+                                Rappel de rendez-vous
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 ml-8">Envoie un rappel avant chaque rendez-vous</p>
+                    </div>
+                    <div>
+                        <label for="email_reminder_hours" class="block text-sm font-semibold text-gray-700 mb-2">Heures avant le rappel</label>
+                        <input type="number" name="email_reminder_hours" id="email_reminder_hours" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors" 
+                               value="{{ settings.email_reminder_hours }}" min="1" max="72">
+                        <p class="text-xs text-gray-500 mt-1">Nombre d'heures avant le rendez-vous pour envoyer le rappel</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="email_newsletter_enabled" id="email_newsletter_enabled" 
+                                   class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
+                                   {{ settings.email_newsletter_enabled == '1' ? 'checked' : '' }}>
+                            <label for="email_newsletter_enabled" class="text-sm font-semibold text-gray-700">
+                                Newsletter
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 ml-8">Permet l'envoi de newsletters aux clients</p>
+                    </div>
+                </div>
+                <div class="mt-6 p-6 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+                    <h4 class="text-blue-800 font-semibold mb-4">Configuration des emails</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center py-2 border-b border-blue-200 last:border-b-0">
+                            <span class="text-blue-700">Confirmation de réservation</span>
+                            <span class="text-blue-700 font-semibold">{{ settings.email_confirmation_enabled == '1' ? 'Activé' : 'Désactivé' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-blue-200 last:border-b-0">
+                            <span class="text-blue-700">Rappel de rendez-vous</span>
+                            <span class="text-blue-700 font-semibold">{{ settings.email_reminder_enabled == '1' ? 'Activé' : 'Désactivé' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-blue-200 last:border-b-0">
+                            <span class="text-blue-700">Newsletter</span>
+                            <span class="text-blue-700 font-semibold">{{ settings.email_newsletter_enabled == '1' ? 'Activé' : 'Désactivé' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions du formulaire -->
+            <div class="flex justify-center pt-8">
+                <button type="submit" class="btn-primary">
+                    Enregistrer les paramètres
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %} 

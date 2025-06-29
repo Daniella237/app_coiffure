@@ -2,6 +2,217 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    background-color: skyblue;
+/* Composants personnalisés */
+@layer components {
+    /* Boutons */
+    .btn {
+        @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 cursor-pointer;
+    }
+    
+    .btn-primary {
+        @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+    }
+    
+    .btn-secondary {
+        @apply bg-slate-600 text-white hover:bg-slate-700 focus:ring-slate-500;
+    }
+    
+    .btn-success {
+        @apply bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500;
+    }
+    
+    .btn-danger {
+        @apply bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500;
+    }
+    
+    .btn-warning {
+        @apply bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-400;
+    }
+    
+    .btn-outline {
+        @apply border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500;
+    }
+    
+    /* Boutons small */
+    .btn-small {
+        @apply inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 cursor-pointer;
+    }
+    
+    .btn-primary-small {
+        @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+    }
+    
+    .btn-secondary-small {
+        @apply bg-slate-600 text-white hover:bg-slate-700 focus:ring-slate-500;
+    }
+    
+    .btn-success-small {
+        @apply bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500;
+    }
+    
+    .btn-danger-small {
+        @apply bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500;
+    }
+    
+    .btn-warning-small {
+        @apply bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-400;
+    }
+    
+    .btn-info-small {
+        @apply bg-cyan-500 text-white hover:bg-cyan-600 focus:ring-cyan-400;
+    }
+    
+    .btn-outline-small {
+        @apply border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500;
+    }
+    
+    /* Cartes */
+    .card {
+        @apply bg-white rounded-xl shadow-lg overflow-hidden;
+    }
+    
+    .card-header {
+        @apply px-6 py-4 border-b border-gray-200;
+    }
+    
+    .card-body {
+        @apply px-6 py-4;
+    }
+    
+    /* Formulaires */
+    .form-input {
+        @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500;
+    }
+    
+    .form-label {
+        @apply block text-sm font-medium text-gray-700 mb-1;
+    }
+    
+    /* Astérisque pour les champs obligatoires */
+    .form-label:has(+ .form-input[required])::after,
+    .form-label:has(+ select[required])::after,
+    .form-label:has(+ textarea[required])::after {
+        content: " *";
+        color: #dc2626; /* Rouge */
+        font-weight: bold;
+    }
+    
+    /* Alternative pour les navigateurs qui ne supportent pas :has() */
+    .required::after {
+        content: " *";
+        color: #dc2626; /* Rouge */
+        font-weight: bold;
+    }
+    
+    /* Rendre les astérisques existants en rouge */
+    .asterisk-red {
+        color: #dc2626 !important; /* Rouge */
+    }
+    
+    /* Cibler les astérisques dans les labels */
+    .form-label .asterisk {
+        color: #dc2626 !important; /* Rouge */
+        font-weight: bold;
+    }
+    
+    /* Badges */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+    
+    .badge-success {
+        @apply bg-green-100 text-green-800;
+    }
+    
+    .badge-warning {
+        @apply bg-yellow-100 text-yellow-800;
+    }
+    
+    .badge-danger {
+        @apply bg-red-100 text-red-800;
+    }
+    
+    .badge-info {
+        @apply bg-blue-100 text-blue-800;
+    }
+    
+    /* Navigation */
+    .nav-link {
+        @apply hover:bg-white/20 px-4 py-2 rounded transition-colors cursor-pointer;
+    }
+    
+    .nav-link-active {
+        @apply bg-white/20 border border-white/30;
+    }
+    
+    /* Statistiques */
+    .stat-card {
+        @apply bg-white p-6 rounded-xl shadow-lg text-center border-l-4;
+    }
+    
+    .stat-number {
+        @apply text-4xl font-bold text-gray-800 mb-3;
+    }
+    
+    .stat-label {
+        @apply text-gray-600 text-sm uppercase tracking-wide;
+    }
+    
+    /* Animations personnalisées */
+    .hover-lift {
+        @apply transition-transform duration-300 hover:-translate-y-1;
+    }
+    
+    .hover-lift-sm {
+        @apply transition-transform duration-300 hover:-translate-y-0.5;
+    }
+}
+
+/* S'assurer que tous les liens sont cliquables */
+a {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+/* S'assurer que tous les boutons sont cliquables */
+button, .btn {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 10;
+}
+
+/* S'assurer que les formulaires sont cliquables */
+form {
+    pointer-events: auto !important;
+}
+
+/* S'assurer que les éléments interactifs sont au-dessus */
+.btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning, .btn-outline {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto !important;
+}
+
+/* Styles de débogage pour forcer les clics */
+.btn, button, a {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 100 !important;
+    user-select: none;
+}
+
+/* S'assurer que les liens dans les tableaux sont cliquables */
+table a, table button, table .btn {
+    position: relative;
+    z-index: 50 !important;
+    pointer-events: auto !important;
+}
+
+/* Forcer l'affichage des boutons */
+.btn {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
