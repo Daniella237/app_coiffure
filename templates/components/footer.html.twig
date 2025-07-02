@@ -1,0 +1,46 @@
+<footer class="bg-gray-900 text-white py-16">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+			<div>
+				<h3 class="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent mb-4">
+					Glowly
+				</h3>
+				<p class="text-gray-400">
+					Votre salon de beauté spécialisé dans les soins capillaires afro et la beauté moderne.
+				</p>
+			</div>
+			
+			<div>
+				<h4 class="text-lg font-semibold mb-4">Services</h4>
+				<ul class="space-y-2 text-gray-400">
+					{% for service in services|slice(0, 4) %}
+						<li><a href="#" class="hover:text-white transition-colors">{{ service.name }}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+			
+			<div>
+				<h4 class="text-lg font-semibold mb-4">Produits</h4>
+				<ul class="space-y-2 text-gray-400">
+					{% for product in products|slice(0, 4) %}
+						<li><a href="#" class="hover:text-white transition-colors">{{ product.name }}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+			
+			<div>
+				<h4 class="text-lg font-semibold mb-4">Contact</h4>
+				<ul class="space-y-2 text-gray-400">
+					<li>📞 01 23 45 67 89</li>
+					<li>📧 contact@glowly.fr</li>
+					<li>📍 123 Rue de la Beauté, Paris</li>
+					<li>🕒 Lun-Sam: 9h-19h</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+			<p>&copy; 2025 Glowly. Tous droits réservés.</p>
+		</div>
+	</div>
+</footer>

@@ -184,7 +184,32 @@ class AppFixtures extends Fixture
             ]
         ];
 
-        // Création des catégories de services
+        $serviceImages = [
+            'Coiffure' => [
+                'https://images.pexels.com/photos/32807304/pexels-photo-32807304.jpeg', 'https://images.pexels.com/photos/32722100/pexels-photo-32722100.jpeg', 'https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg', 'https://images.pexels.com/photos/973403/pexels-photo-973403.jpeg',
+                'https://images.pexels.com/photos/31818415/pexels-photo-31818415.jpeg', 'https://images.pexels.com/photos/7577050/pexels-photo-7577050.jpeg', 'https://images.pexels.com/photos/6606914/pexels-photo-6606914.jpeg', 'https://images.pexels.com/photos/23350857/pexels-photo-23350857.jpeg'
+            ],
+            'Onglerie' => [
+                'https://images.pexels.com/photos/887352/pexels-photo-887352.jpeg', 'https://images.pexels.com/photos/851219/pexels-photo-851219.jpeg', 'https://images.pexels.com/photos/994173/pexels-photo-994173.jpeg', 'https://images.pexels.com/photos/332046/pexels-photo-332046.jpeg',
+                'https://images.pexels.com/photos/332046/pexels-photo-332046.jpeg', 'https://images.pexels.com/photos/4210657/pexels-photo-4210657.jpeg', 'https://images.pexels.com/photos/2701767/pexels-photo-2701767.jpeg'
+            ],
+            'Extension de cils' => [
+                'cils-1.jpg', 'cils-2.jpg', 'volume-russe-1.jpg', 'mixte-1.jpg',
+                'retouche-cils-1.jpg'
+            ],
+            'Maquillage' => [
+                'https://images.pexels.com/photos/5128235/pexels-photo-5128235.jpeg', 'https://images.pexels.com/photos/20765765/pexels-photo-20765765.jpeg', 'https://images.pexels.com/photos/247287/pexels-photo-247287.jpeg', 'https://images.pexels.com/photos/1523528/pexels-photo-1523528.jpeg',
+                'https://images.pexels.com/photos/1910051/pexels-photo-1910051.jpeg'
+            ],
+            'Massage & Head Spa' => [
+                'massage-1.jpg', 'massage-2.jpg', 'head-spa-1.jpg', 'relaxant-1.jpg'
+            ],
+            'Pose de perruques' => [
+                'https://images.pexels.com/photos/2703039/pexels-photo-2703039.jpeg', 'https://images.pexels.com/photos/19190390/pexels-photo-19190390.jpeg', 'https://images.pexels.com/photos/2085528/pexels-photo-2085528.jpeg',
+                'https://images.pexels.com/photos/4724468/pexels-photo-4724468.jpeg', 'https://images.pexels.com/photos/13221801/pexels-photo-13221801.jpeg'
+            ]
+        ];
+
         $serviceCategoryEntities = [];
         foreach ($serviceCategories as $categoryName => $services) {
             $category = new ServiceCategory();
@@ -194,7 +219,6 @@ class AppFixtures extends Fixture
             $manager->persist($category);
             $serviceCategoryEntities[$categoryName] = $category;
 
-            // Création des services pour chaque catégorie
             foreach ($services as $serviceName => $serviceData) {
                 $service = new Service();
                 $service->setName($serviceName);
@@ -203,11 +227,16 @@ class AppFixtures extends Fixture
                 $service->setDurationMinutes($serviceData['duration']);
                 $service->setCategory($category);
                 $service->setIsActive(true);
+                
+                if (isset($serviceImages[$categoryName])) {
+                    $randomImage = $serviceImages[$categoryName][array_rand($serviceImages[$categoryName])];
+                    $service->setImage($randomImage);
+                }
+                
                 $manager->persist($service);
             }
         }
 
-        // Création des catégories de produits
         $productCategories = [
             'Perruques' => [
                 'Lace frontal' => [
@@ -265,7 +294,6 @@ class AppFixtures extends Fixture
             ]
         ];
 
-        // Création des catégories de produits
         $productCategoryEntities = [];
         foreach ($productCategories as $categoryName => $products) {
             $category = new ProductCategory();
@@ -275,7 +303,6 @@ class AppFixtures extends Fixture
             $manager->persist($category);
             $productCategoryEntities[$categoryName] = $category;
 
-            // Création des produits pour chaque catégorie
             foreach ($products as $productName => $productData) {
                 $product = new Product();
                 $product->setName($productName);
@@ -289,7 +316,6 @@ class AppFixtures extends Fixture
             }
         }
 
-        // Création d'un utilisateur admin
         $admin = new User();
         $admin->setFirstName('Admin');
         $admin->setLastName('Glowly');
@@ -300,7 +326,6 @@ class AppFixtures extends Fixture
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
         $manager->persist($admin);
 
-        // Création de plusieurs employés
         $employeesData = [
             ['Marie', 'Dubois', 'marie@glowly.fr', '+33 1 23 45 67 90', 'Coiffure, Tresses, Maquillage'],
             ['Sophie', 'Martin', 'sophie@glowly.fr', '+33 1 23 45 67 91', 'Onglerie, Extension de cils'],
@@ -330,7 +355,6 @@ class AppFixtures extends Fixture
             $employeeEntities[] = $employee;
         }
 
-        // Création de nombreux clients
         $clients = [
             ['Sophie', 'Martin', 'sophie.martin@email.com', '+33 6 12 34 56 78'],
             ['Emma', 'Bernard', 'emma.bernard@email.com', '+33 6 23 45 67 89'],
@@ -368,7 +392,6 @@ class AppFixtures extends Fixture
             $clientEntities[] = $client;
         }
 
-        // Création de nombreux rendez-vous
         $services = $manager->getRepository(Service::class)->findAll();
         if (!empty($services)) {
             $statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
@@ -391,7 +414,6 @@ class AppFixtures extends Fixture
                 $appointment->setEmployee($employeeEntities[array_rand($employeeEntities)]);
                 $appointment->setService($services[array_rand($services)]);
                 
-                // Dates variées (passées et futures)
                 $daysOffset = rand(-30, 60);
                 $appointment->setAppointmentDate(new \DateTime('+' . $daysOffset . ' days'));
                 
@@ -401,7 +423,6 @@ class AppFixtures extends Fixture
             }
         }
 
-        // Création de nombreuses commandes
         $products = $manager->getRepository(Product::class)->findAll();
         if (!empty($products)) {
             $orderStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
@@ -456,7 +477,6 @@ class AppFixtures extends Fixture
                 $order->setCreatedAt(new \DateTime('-' . rand(1, 90) . ' days'));
                 $manager->persist($order);
 
-                // Ajout d'articles à la commande
                 $orderItems = rand(1, 4);
                 $totalAmount = 0;
                 for ($j = 0; $j < $orderItems; $j++) {
@@ -478,7 +498,6 @@ class AppFixtures extends Fixture
             }
         }
 
-        // Création de quelques paramètres
         $settings = [
             'salon_name' => 'Salon de Beauté Glowly',
             'salon_address' => '123 Rue de la Beauté, 75001 Paris',
