@@ -16,12 +16,12 @@ class HomeController extends AbstractController
         ProductRepository $productRepository
     ): Response {
         $services = $serviceRepository->findAll();
-
+        $user = $this->getUser();
         $products = $productRepository->findAll();
-        // dd($products);
         return $this->render('home/index.html.twig', [
             'services' => $services,
             'products' => $products,
+            'user' => $user,
         ]);
     }
 } 

@@ -1,0 +1,203 @@
+{% extends 'client/base.html.twig' %}
+
+{% block title %}Dashboard - {{ user.firstName }} {{ user.lastName }}{% endblock %}
+
+{% block body %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">
+                    Bonjour, {{ user.firstName }} ! 👋
+                </h1>
+                <p class="text-gray-600 mt-2">
+                    Bienvenue dans votre espace personnel Glowly
+                </p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-gray-500">Membre depuis</p>
+                <p class="text-lg font-semibold text-gray-900">
+                    {{ user.createdAt|date('M Y') }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Commandes -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-pink-100 rounded-full">
+                    <i class="fas fa-shopping-bag text-pink-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Commandes</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ recentOrders|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rendez-vous -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-purple-100 rounded-full">
+                    <i class="fas fa-calendar-alt text-purple-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Rendez-vous à venir</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ upcomingAppointments|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panier -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-green-100 rounded-full">
+                    <i class="fas fa-shopping-cart text-green-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Articles en panier</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ user.cartItems|length }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Commandes récentes -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-shopping-bag mr-2 text-pink-600"></i>
+                    Commandes récentes
+                </h2>
+                <a href="{{ path('client_orders') }}" class="text-pink-600 hover:text-pink-700 text-sm font-medium">
+                    Voir tout <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            {% if recentOrders|length > 0 %}
+                <div class="space-y-4">
+                    {% for order in recentOrders %}
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">Commande #{{ order.id }}</p>
+                                <p class="text-sm text-gray-600">{{ order.createdAt|date('d/m/Y H:i') }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-gray-900">{{ order.total|number_format(2, ',', ' ') }} €</p>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elseif order.status == 'processing' %}bg-blue-100 text-blue-800
+                                    {% elseif order.status == 'shipped' %}bg-purple-100 text-purple-800
+                                    {% elseif order.status == 'delivered' %}bg-green-100 text-green-800
+                                    {% elseif order.status == 'cancelled' %}bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ order.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-shopping-bag text-gray-300 text-4xl mb-4"></i>
+                    <p class="text-gray-500">Aucune commande pour le moment</p>
+                    <a href="{{ path('home') }}" class="inline-block mt-4 text-pink-600 hover:text-pink-700 font-medium">
+                        Découvrir nos produits
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Rendez-vous à venir -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-calendar-alt mr-2 text-purple-600"></i>
+                    Rendez-vous à venir
+                </h2>
+                <a href="{{ path('client_appointments') }}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                    Voir tout <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            {% if upcomingAppointments|length > 0 %}
+                <div class="space-y-4">
+                    {% for appointment in upcomingAppointments %}
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ appointment.service.name }}</p>
+                                <p class="text-sm text-gray-600">{{ appointment.date|date('d/m/Y H:i') }}</p>
+                                <p class="text-xs text-gray-500">avec {{ appointment.employee.user.firstName }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if appointment.status == 'confirmed' %}bg-green-100 text-green-800
+                                    {% elseif appointment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ appointment.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-calendar-alt text-gray-300 text-4xl mb-4"></i>
+                    <p class="text-gray-500">Aucun rendez-vous à venir</p>
+                    <a href="{{ path('home') }}" class="inline-block mt-4 text-purple-600 hover:text-purple-700 font-medium">
+                        Prendre rendez-vous
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-bolt mr-2 text-yellow-600"></i>
+            Actions rapides
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <a href="{{ path('home') }}" class="flex items-center p-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all transform hover:scale-105">
+                <i class="fas fa-plus text-xl mr-3"></i>
+                <div>
+                    <p class="font-semibold">Nouveau RDV</p>
+                    <p class="text-sm opacity-90">Prendre rendez-vous</p>
+                </div>
+            </a>
+
+            <a href="{{ path('home') }}" class="flex items-center p-4 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all transform hover:scale-105">
+                <i class="fas fa-shopping-cart text-xl mr-3"></i>
+                <div>
+                    <p class="font-semibold">Acheter</p>
+                    <p class="text-sm opacity-90">Nos produits</p>
+                </div>
+            </a>
+
+            <a href="{{ path('client_profile') }}" class="flex items-center p-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all transform hover:scale-105">
+                <i class="fas fa-user-edit text-xl mr-3"></i>
+                <div>
+                    <p class="font-semibold">Profil</p>
+                    <p class="text-sm opacity-90">Modifier mes infos</p>
+                </div>
+            </a>
+
+            <a href="{{ path('client_cart') }}" class="flex items-center p-4 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all transform hover:scale-105">
+                <i class="fas fa-shopping-bag text-xl mr-3"></i>
+                <div>
+                    <p class="font-semibold">Panier</p>
+                    <p class="text-sm opacity-90">Voir mon panier</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

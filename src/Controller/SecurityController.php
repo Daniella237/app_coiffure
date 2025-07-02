@@ -17,10 +17,13 @@ class SecurityController extends AbstractController
             $user = $this->getUser();
             
             // Vérifier le rôle de l'utilisateur
-            if (in_array('ROLE_EMPLOYEE', $user->getRoles())) {
-                return $this->redirectToRoute('employee_dashboard');
-            } elseif (in_array('ROLE_ADMIN', $user->getRoles())) {
+            if (in_array('ROLE_ADMIN', $user->getRoles())) {
                 return $this->redirectToRoute('admin_dashboard');
+            } elseif (in_array('ROLE_EMPLOYEE', $user->getRoles())) {
+                return $this->redirectToRoute('employee_dashboard');
+            } else {
+                // Pour les clients (ROLE_USER), rediriger vers le dashboard client
+                return $this->redirectToRoute('client_dashboard');
             }
         }
 

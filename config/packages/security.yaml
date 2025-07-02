@@ -23,7 +23,7 @@ security:
                 default_target_path: admin_dashboard
             logout:
                 path: admin_logout
-                target: admin_login
+                target: home
         employee:
             pattern: ^/employee
             provider: app_user_provider
@@ -35,19 +35,20 @@ security:
                 default_target_path: employee_dashboard
             logout:
                 path: admin_logout
-                target: admin_login
+                target: home
         main:
             lazy: true
             provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                username_parameter: _username
+                password_parameter: _password
+                default_target_path: client_dashboard
+            logout:
+                path: app_logout
+                target: home
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/admin/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }

@@ -1,0 +1,7 @@
+"Invalid credentials.": "Email ou mot de passe incorrect. Veuillez vérifier vos identifiants."
+"Bad credentials.": "Email ou mot de passe incorrect. Veuillez vérifier vos identifiants."
+"Username could not be found.": "Aucun compte trouvé avec cette adresse email. Veuillez créer un compte ou vérifier votre email."
+"Account is disabled.": "Votre compte a été désactivé. Veuillez contacter l'administrateur."
+"Account is locked.": "Votre compte a été verrouillé. Veuillez contacter l'administrateur."
+"Too many failed login attempts, please try again later.": "Trop de tentatives de connexion échouées. Veuillez réessayer plus tard."
+"Authentication request could not be processed due to a system problem.": "La demande d'authentification n'a pas pu être traitée en raison d'un problème système." 

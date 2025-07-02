@@ -1,0 +1,315 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Glowly{% endblock %}
+
+{% block body %}
+<div class="min-h-screen gradient-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <a href="/" class="text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+                Glowly
+            </a>
+            <h2 class="mt-6 text-3xl font-bold text-gray-900">
+                Créer votre compte
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Rejoignez notre communauté et accédez à nos services
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            {{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
+                
+                {% for flash_error in app.flashes('error') %}
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Erreur</h3>
+                                <div class="mt-2 text-sm text-red-700">{{ flash_error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% for flash_success in app.flashes('success') %}
+                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-green-800">Succès</h3>
+                                <div class="mt-2 text-sm text-green-700">{{ flash_success }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% if error %}
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Erreur de validation</h3>
+                                <div class="mt-2 text-sm text-red-700">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if registrationForm.vars.errors|length > 0 %}
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Erreurs de formulaire</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        {% for error in registrationForm.vars.errors %}
+                                            <li>{{ error.message }}</li>
+                                        {% endfor %}
+                                        {% for child in registrationForm %}
+                                            {% for error in child.vars.errors %}
+                                                <li><strong>{{ child.vars.label|default(child.vars.name) }}:</strong> {{ error.message }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        {{ form_label(registrationForm.firstName, 'Prénom', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                        {{ form_widget(registrationForm.firstName, {
+                            'attr': {
+                                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all',
+                                'placeholder': 'Votre prénom',
+                                'autofocus': true
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.firstName) }}
+                    </div>
+                    <div>
+                        {{ form_label(registrationForm.lastName, 'Nom', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                        {{ form_widget(registrationForm.lastName, {
+                            'attr': {
+                                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all',
+                                'placeholder': 'Votre nom'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.lastName) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(registrationForm.email, 'Adresse email', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    {{ form_widget(registrationForm.email, {
+                        'attr': {
+                            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all',
+                            'placeholder': 'votre@email.com'
+                        }
+                    }) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+
+                <div>
+                    {{ form_label(registrationForm.phone, 'Téléphone (optionnel)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    {{ form_widget(registrationForm.phone, {
+                        'attr': {
+                            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all',
+                            'placeholder': '06 12 34 56 78'
+                        }
+                    }) }}
+                    {{ form_errors(registrationForm.phone) }}
+                </div>
+
+                <div>
+                    {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    <div class="relative">
+                        {{ form_widget(registrationForm.plainPassword.first, {
+                            'attr': {
+                                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all pr-12',
+                                'placeholder': 'Minimum 8 caractères',
+                                'id': 'registerPassword'
+                            }
+                        }) }}
+                        <button 
+                            type="button" 
+                            onclick="togglePassword('registerPassword')"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                            <svg id="registerPassword-eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500">
+                        Le mot de passe doit contenir au moins 8 caractères
+                    </div>
+                    {{ form_errors(registrationForm.plainPassword.first) }}
+                </div>
+
+                <div>
+                    {{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    <div class="relative">
+                        {{ form_widget(registrationForm.plainPassword.second, {
+                            'attr': {
+                                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all pr-12',
+                                'placeholder': 'Répétez votre mot de passe',
+                                'id': 'confirmPassword'
+                            }
+                        }) }}
+                        <button 
+                            type="button" 
+                            onclick="togglePassword('confirmPassword')"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                            <svg id="confirmPassword-eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    {{ form_errors(registrationForm.plainPassword.second) }}
+                </div>
+
+                <div class="space-y-2">
+                    <div class="text-sm text-gray-600">Force du mot de passe :</div>
+                    <div class="flex space-x-1">
+                        <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="passwordStrength" class="h-full bg-red-500 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div id="passwordFeedback" class="text-xs text-gray-500"></div>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="flex items-start">
+                        {{ form_widget(registrationForm.agreeTerms, {
+                            'attr': {
+                                'class': 'w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500 mt-1'
+                            }
+                        }) }}
+                        <span class="ml-2 text-sm text-gray-600">
+                            J'accepte les 
+                            <a href="#" class="text-pink-600 hover:text-pink-700">conditions d'utilisation</a> 
+                            et la 
+                            <a href="#" class="text-pink-600 hover:text-pink-700">politique de confidentialité</a>
+                        </span>
+                    </label>
+                    {{ form_errors(registrationForm.agreeTerms) }}
+                    
+                    <label class="flex items-start">
+                        {{ form_widget(registrationForm.newsletter, {
+                            'attr': {
+                                'class': 'w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500 mt-1'
+                            }
+                        }) }}
+                        <span class="ml-2 text-sm text-gray-600">
+                            Je souhaite recevoir les offres et nouveautés par email
+                        </span>
+                    </label>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                >
+                    Créer mon compte
+                </button>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">ou</span>
+                    </div>
+                </div>
+
+
+                <div class="text-center">
+                    <p class="text-gray-600">
+                        Déjà un compte ? 
+                        <a href="{{ path('app_login') }}" class="text-pink-600 hover:text-pink-700 font-medium">
+                            Se connecter
+                        </a>
+                    </p>
+                </div>
+            {{ form_end(registrationForm) }}
+        </div>
+
+        <div class="text-center">
+            <a href="/" class="text-gray-600 hover:text-gray-800 font-medium">
+                ← Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('registerPassword').addEventListener('input', function() {
+    const password = this.value;
+    const strengthBar = document.getElementById('passwordStrength');
+    const feedback = document.getElementById('passwordFeedback');
+    
+    let strength = 0;
+    let feedbackText = '';
+    
+    if (password.length >= 8) strength += 25;
+    if (password.match(/[a-z]/)) strength += 25;
+    if (password.match(/[A-Z]/)) strength += 25;
+    if (password.match(/[0-9]/)) strength += 25;
+    
+    strengthBar.style.width = strength + '%';
+    
+    if (strength <= 25) {
+        strengthBar.className = 'h-full bg-red-500 transition-all duration-300';
+        feedbackText = 'Très faible';
+    } else if (strength <= 50) {
+        strengthBar.className = 'h-full bg-orange-500 transition-all duration-300';
+        feedbackText = 'Faible';
+    } else if (strength <= 75) {
+        strengthBar.className = 'h-full bg-yellow-500 transition-all duration-300';
+        feedbackText = 'Moyen';
+    } else {
+        strengthBar.className = 'h-full bg-green-500 transition-all duration-300';
+        feedbackText = 'Fort';
+    }
+    
+    feedback.textContent = feedbackText;
+});
+
+document.getElementById('confirmPassword').addEventListener('input', function() {
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = this.value;
+    
+    if (confirmPassword && password !== confirmPassword) {
+        this.classList.add('border-red-500');
+        this.classList.remove('border-gray-300');
+    } else {
+        this.classList.remove('border-red-500');
+        this.classList.add('border-gray-300');
+    }
+});
+</script>
+{% endblock %} 

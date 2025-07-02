@@ -14,18 +14,22 @@
 				<a href="#contact" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">Contact</a>
 			</div>
 
-			<div class="flex items-center space-x-4">
-				<a href="/login" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">Connexion</a>
-				<a href="#" onclick="openRegisterModal()" class="btn-primary">Réserver</a>
-			</div>
+			{% if user %}
+				{% include 'client/composant/menu.html.twig' with {'user': user, 'isHome': true} %}
+			{% else %}
+				<div class="flex items-center space-x-4">
+					<a href="/client/login" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">Connexion</a>
+					<a href="#" onclick="openRegisterModal()" class="btn-primary">Réserver</a>
+				</div>
 
-			<div class="md:hidden">
-				<button class="text-gray-700 hover:text-pink-500">
-					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-					</svg>
-				</button>
+				<div class="md:hidden">
+					<button class="text-gray-700 hover:text-pink-500">
+						<svg class="h-6 w-6" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+						</svg>
+					</button>
+				</div>
+			{% endif %}
 			</div>
 		</div>
-	</div>
-</nav>
+	</nav>

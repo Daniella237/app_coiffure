@@ -69,6 +69,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelectorAll('.btn-primary, .btn-secondary');
     buttons.forEach(button => {
         button.addEventListener('click', function(e) {
+            // Ne pas intercepter si c'est un bouton de soumission de formulaire
+            if (this.type === 'submit') {
+                return;
+            }
+            
             const originalText = this.textContent;
             this.textContent = 'Chargement...';
             this.disabled = true;

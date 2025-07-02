@@ -141,4 +141,26 @@ class AppointmentRepository extends ServiceEntityRepository
         $result = $qb->getQuery()->getSingleResult();
         return $result['total'] ? (float) $result['total'] : 0.0;
     }
+
+    public function findUpcomingByUser($user, int $limit = null): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->join('a.service', 's')
+            ->join('a.employee', 'e')
+            ->join('e.user', 'u')
+            ->addSelect('s', 'e', 'u')
+            ->andWhere('a.client = :user')
+            ->andWhere('a.appointmentDate >= :now')
+            ->andWhere('a.status IN (:statuses)')
+            ->setParameter('user', $user)
+            ->setParameter('now', new \DateTime())
+            ->setParameter('statuses', ['pending', 'confirmed'])
+            ->orderBy('a.appointmentDate', 'ASC');
+
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 } 
