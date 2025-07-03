@@ -100,4 +100,25 @@ class OrderItem
             $this->totalPrice = (string) (floatval($this->unitPrice) * $this->quantity);
         }
     }
+
+    // Méthodes aliases pour compatibilité avec les templates et controller
+    public function getPrice(): ?string
+    {
+        return $this->getUnitPrice();
+    }
+
+    public function setPrice(string $price): static
+    {
+        return $this->setUnitPrice($price);
+    }
+
+    public function getOrderEntity(): ?Order
+    {
+        return $this->getOrder();
+    }
+
+    public function setOrderEntity(?Order $order): static
+    {
+        return $this->setOrder($order);
+    }
 } 

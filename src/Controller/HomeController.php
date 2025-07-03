@@ -159,50 +159,55 @@ class HomeController extends AbstractController
         }
 
         $data = json_decode($request->getContent(), true);
-        $appointmentDateTime = new \DateTime($data['appointment_date'] ?? '');
-        $employeeId = $data['employee_id'] ?? null;
-
-        if (!$appointmentDateTime || !$employeeId) {
-            return new JsonResponse(['error' => 'Données invalides'], 400);
+        
+        if (!$data) {
+            return new JsonResponse(['error' => 'Données JSON invalides'], 400);
         }
 
-        $employee = $em->getRepository(\App\Entity\Employee::class)->find($employeeId);
-        if (!$employee || !$employee->isAvailable() || !$employee->getUser()->isActive()) {
-            return new JsonResponse(['error' => 'Employé non trouvé ou non disponible'], 404);
+        try {
+            $appointmentDateTime = new \DateTime($data['appointment_date'] ?? '');
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Format de date invalide'], 400);
         }
 
-        $startTime = clone $appointmentDateTime;
-        $startTime->modify('-2 hours');
-        $endTime = clone $appointmentDateTime;
-        $endTime->modify('+2 hours');
-
-        $existingAppointments = $appointmentRepository->createQueryBuilder('a')
-            ->andWhere('a.employee = :employee')
-            ->andWhere('a.appointmentDate BETWEEN :start AND :end')
-            ->andWhere('a.status != :cancelled')
-            ->setParameter('employee', $employee)
-            ->setParameter('start', $startTime)
-            ->setParameter('end', $endTime)
-            ->setParameter('cancelled', Appointment::STATUS_CANCELLED)
-            ->getQuery()
-            ->getResult();
-
-        if (!empty($existingAppointments)) {
-            return new JsonResponse(['error' => 'Créneau non disponible'], 409);
+        if (!$appointmentDateTime) {
+            return new JsonResponse(['error' => 'Date de rendez-vous requise'], 400);
         }
 
+        // Vérifier que la date n'est pas dans le passé
+        $now = new \DateTime();
+        if ($appointmentDateTime < $now) {
+            return new JsonResponse(['error' => 'Impossible de réserver dans le passé'], 400);
+        }
+
+        // Vérifier si le service est actif
+        if (!$service->isActive() || !$service->getCategory()->isActive()) {
+            return new JsonResponse(['error' => 'Service non disponible'], 404);
+        }
+
+        // Créer la réservation sans employé assigné (l'admin l'assignera plus tard)
         $appointment = new Appointment();
         $appointment->setClient($this->getUser());
         $appointment->setService($service);
-        $appointment->setEmployee($employee);
+        $appointment->setEmployee(null); // Pas d'employé assigné pour le moment
         $appointment->setAppointmentDate($appointmentDateTime);
         $appointment->setPrice($service->getPrice());
         $appointment->setStatus(Appointment::STATUS_PENDING);
+        
+        if (isset($data['notes']) && !empty($data['notes'])) {
+            $appointment->setNotes($data['notes']);
+        }
 
         $em->persist($appointment);
         $em->flush();
 
-        return new JsonResponse(['success' => 'Réservation créée avec succès', 'id' => $appointment->getId()]);
+        return new JsonResponse([
+            'success' => 'Réservation créée avec succès ! L\'admin vous assignera un employé prochainement.',
+            'id' => $appointment->getId(),
+            'appointment_date' => $appointmentDateTime->format('Y-m-d H:i:s'),
+            'service_name' => $service->getName(),
+            'price' => $service->getPrice()
+        ]);
     }
 
     #[Route('/products', name: 'products')]
