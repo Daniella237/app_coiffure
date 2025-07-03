@@ -1,0 +1,75 @@
+<section class="flex items-center space-x-4">
+	<a href="{{ path('client_cart') }}" class="relative p-2 text-gray-600 hover:text-pink-600 transition-colors">
+		<i class="fas fa-shopping-cart text-xl"></i>
+		{% set cartCount = user ? user.cartItems|length : 0 %}
+		{% if cartCount > 0 %}
+			<span class="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+				{{ cartCount }}
+			</span>
+		{% endif %}
+	</a>
+
+	<div class="relative">
+		<button id="user-menu-button" class="flex items-center space-x-2 text-gray-700 hover:text-pink-600 transition-colors">
+			<div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+				{{ user.firstName|first|upper }}
+			</div>
+			<span class="hidden md:block text-sm font-medium">{{ user.firstName }}</span>
+			<i class="fas fa-chevron-down text-xs"></i>
+		</button>
+
+		<div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+			<a href="{{ path('client_profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+				<i class="fas fa-user mr-2"></i>Mon Profil
+			</a>
+			<a href="{{ path('client_orders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+				<i class="fas fa-shopping-bag mr-2"></i>Mes Commandes
+			</a>
+			<a href="{{ path('client_appointments') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+				<i class="fas fa-calendar-alt mr-2"></i>Mes Rendez-vous
+			</a>
+			<hr class="my-1">
+			{% if not isHome %}
+				<a href="{{ path('home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+					<i class="fas fa-home mr-2"></i>Retour au site
+				</a>
+			{% endif %}
+			<a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+				<i class="fas fa-sign-out-alt mr-2"></i>Se déconnecter
+			</a>
+		</div>
+	</div>
+</section>
+
+<div id="mobile-menu" class="hidden md:hidden">
+	<div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+		<a href="{{ path('client_dashboard') }}" class="block px-3 py-2 text-gray-900 hover:text-pink-600 text-base font-medium">
+			<i class="fas fa-home mr-2"></i>Dashboard
+		</a>
+		<a href="{{ path('client_orders') }}" class="block px-3 py-2 text-gray-900 hover:text-pink-600 text-base font-medium">
+			<i class="fas fa-shopping-bag mr-2"></i>Mes Commandes
+		</a>
+		<a href="{{ path('client_appointments') }}" class="block px-3 py-2 text-gray-900 hover:text-pink-600 text-base font-medium">
+			<i class="fas fa-calendar-alt mr-2"></i>Mes Rendez-vous
+		</a>
+		<a href="{{ path('client_profile') }}" class="block px-3 py-2 text-gray-900 hover:text-pink-600 text-base font-medium">
+			<i class="fas fa-user mr-2"></i>Mon Profil
+		</a>
+	</div>
+</div>
+
+
+ <script>
+        document.getElementById('user-menu-button').addEventListener('click', function() {
+            document.getElementById('user-menu-dropdown').classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('user-menu-dropdown');
+            const button = document.getElementById('user-menu-button');
+            
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>

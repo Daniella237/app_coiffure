@@ -10,20 +10,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    #[Route('/', name: 'home')]
     public function index(
         ServiceRepository $serviceRepository,
         ProductRepository $productRepository
     ): Response {
-        // Récupérer les catégories de services avec leurs services
-        $serviceCategories = $serviceRepository->getServiceCategoriesWithServices();
-        
-        // Récupérer les produits par catégorie
-        $productCategories = $productRepository->getProductCategoriesWithProducts();
-
+        $services = $serviceRepository->findAll();
+        $user = $this->getUser();
+        $products = $productRepository->findAll();
         return $this->render('home/index.html.twig', [
-            'serviceCategories' => $serviceCategories,
-            'productCategories' => $productCategories,
+            'services' => $services,
+            'products' => $products,
+            'user' => $user,
         ]);
     }
 } 

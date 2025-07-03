@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}Dashboard Client - Glowly
+			{% endblock %}
+		</title>
+		{% block stylesheets %}
+			<link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+		{% endblock %}
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	</head>
+	<body class="bg-gray-50 min-h-screen">
+		<nav class="bg-white shadow-lg border-b border-gray-200">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="flex justify-between h-16">
+					<div class="flex items-center">
+						<a href="{{ path('home') }}" class="flex items-center space-x-2">
+							<div class="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+								Glowly
+							</div>
+						</a>
+
+						<div class="hidden md:ml-10 md:flex md:space-x-8">
+							<a href="{{ path('client_dashboard') }}" class="text-gray-900 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+								<i class="fas fa-home mr-2"></i>Dashboard
+							</a>
+							<a href="{{ path('client_orders') }}" class="text-gray-900 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+								<i class="fas fa-shopping-bag mr-2"></i>Mes Commandes
+							</a>
+							<a href="{{ path('client_appointments') }}" class="text-gray-900 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+								<i class="fas fa-calendar-alt mr-2"></i>Mes Rendez-vous
+							</a>
+							<a href="{{ path('client_profile') }}" class="text-gray-900 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+								<i class="fas fa-user mr-2"></i>Mon Profil
+							</a>
+						</div>
+					</div>
+
+					<div class="flex items-center space-x-4">
+
+						{% include 'client/composant/menu.html.twig' with {'user': app.user, 'isHome': false } %}
+					</div>
+				</div>
+			</div>
+
+		</nav>
+
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+					<div class="bg-{{ label == 'error' ? 'red' : 'green' }}-50 border border-{{ label == 'error' ? 'red' : 'green' }}-200 text-{{ label == 'error' ? 'red' : 'green' }}-700 px-4 py-3 rounded-lg">
+						{{ message }}
+					</div>
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+		<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> {% block body %}{% endblock %}
+			</main>
+
+			<footer class="bg-white border-t border-gray-200 mt-16">
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+					<div class="text-center text-gray-600">
+						<p>&copy; 2024 Glowly. Tous droits réservés.</p>
+					</div>
+				</div>
+			</footer>
+
+
+			{% block javascripts %}{% endblock %}
+		</body>
+	</html>

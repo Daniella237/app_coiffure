@@ -1,0 +1,35 @@
+<nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-gray-100">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="flex justify-between items-center h-16">
+			<div class="flex items-center">
+				<a href="/" class="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+					Glowly
+				</a>
+			</div>
+
+			<div class="hidden md:flex items-center space-x-8">
+				<a href="#services" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">Services</a>
+				<a href="#products" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">Produits</a>
+				<a href="#about" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">À propos</a>
+				<a href="#contact" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">Contact</a>
+			</div>
+
+			{% if user %}
+				{% include 'client/composant/menu.html.twig' with {'user': user, 'isHome': true} %}
+			{% else %}
+				<div class="flex items-center space-x-4">
+					<a href="/client/login" class="text-gray-700 hover:text-pink-500 transition-colors duration-200">Connexion</a>
+					<a href="#" onclick="openRegisterModal()" class="btn-primary">Réserver</a>
+				</div>
+
+				<div class="md:hidden">
+					<button class="text-gray-700 hover:text-pink-500">
+						<svg class="h-6 w-6" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+						</svg>
+					</button>
+				</div>
+			{% endif %}
+			</div>
+		</div>
+	</nav>
