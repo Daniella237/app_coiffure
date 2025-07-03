@@ -30,7 +30,7 @@ class Appointment
     private ?Service $service = null;
 
     #[ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'appointments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Employee $employee = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

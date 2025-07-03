@@ -1,19 +1,225 @@
-<div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
-	{% if product.images is defined and product.images|length > 0 %}
-		<div class="h-64 bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
-			<img src="{{ product.images[0].url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded-2xl">
-		</div>
-	{% else %}
-		<div class="h-64 bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
-			<span class="text-6xl">🧴</span>
+<!-- Carte produit modernisée -->
+<div class="group relative bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+	<!-- Badge stock -->
+	{% if product.stockQuantity <= 5 %}
+		<div class="absolute top-4 right-4 z-10">
+			{% if product.stockQuantity == 0 %}
+				<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+					<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+					</svg>
+					Rupture
+				</span>
+			{% else %}
+				<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
+					<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+					</svg>
+					Stock faible
+				</span>
+			{% endif %}
 		</div>
 	{% endif %}
+
+	<!-- Badge catégorie -->
+	<div class="absolute top-4 left-4 z-10">
+		<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-800 border border-teal-200">
+			<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+			</svg>
+			{{ product.category.name }}
+		</span>
+	</div>
+
+	<!-- Image du produit -->
+	<div class="relative h-48 overflow-hidden">
+		{% if product.images and product.images|length > 0 %}
+			<img src="{{ product.images[0] }}" alt="{{ product.name }}" 
+				 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+		{% else %}
+			<div class="w-full h-full bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
+				<svg class="w-20 h-20 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+				</svg>
+			</div>
+		{% endif %}
+		
+		<!-- Overlay avec bouton d'action rapide -->
+		<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+			{% if app.user and product.stockQuantity > 0 %}
+				<button onclick="quickAddToCart({{ product.id }})" 
+						class="bg-white text-teal-600 px-4 py-2 rounded-full font-medium hover:bg-teal-50 transition-colors transform scale-90 group-hover:scale-100 duration-300">
+					<svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+					</svg>
+					Ajouter au panier
+				</button>
+			{% endif %}
+		</div>
+	</div>
+
+	<!-- Contenu de la carte -->
 	<div class="p-6">
-		<h3 class="text-xl font-bold text-gray-900 mb-2">{{ product.name }}</h3>
-		<p class="text-gray-600 mb-4">{{ product.description }}</p>
+		<!-- Nom du produit -->
+		<h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors line-clamp-2">
+			<a href="{{ path('product_detail', {id: product.id}) }}" class="block">
+				{{ product.name }}
+			</a>
+		</h3>
+
+		<!-- Description courte -->
+		{% if product.description %}
+			<p class="text-gray-600 text-sm mb-4 line-clamp-2">
+				{{ product.description|striptags|slice(0, 80) }}{% if product.description|length > 80 %}...{% endif %}
+			</p>
+		{% endif %}
+
+		<!-- Informations produit -->
+		<div class="space-y-3 mb-4">
+			<!-- SKU -->
+			<div class="flex items-center text-xs text-gray-500">
+				<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+				</svg>
+				Réf: {{ product.sku }}
+			</div>
+
+			<!-- Stock -->
+			<div class="flex items-center text-xs">
+				<svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+				</svg>
+				{% if product.stockQuantity > 0 %}
+					<span class="text-green-600 font-medium">{{ product.stockQuantity }} en stock</span>
+				{% else %}
+					<span class="text-red-600 font-medium">Rupture de stock</span>
+				{% endif %}
+			</div>
+		</div>
+
+		<!-- Prix et actions -->
 		<div class="flex items-center justify-between">
-			<span class="text-2xl font-bold text-purple-500">{{ product.price }}€</span>
-			<a href="/products/{{ product.sku }}" class="btn-primary text-sm px-4 py-2">Voir le produit</a>
+			<div class="text-2xl font-bold text-teal-600">
+				{{ product.price }}€
+			</div>
+			
+			<div class="flex space-x-2">
+				<!-- Bouton voir détails -->
+				<a href="{{ path('product_detail', {id: product.id}) }}" 
+				   class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+					<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+					</svg>
+					Voir
+				</a>
+
+				<!-- Bouton ajouter au panier (si connecté et en stock) -->
+				{% if app.user and product.stockQuantity > 0 %}
+					<button onclick="addToCart({{ product.id }})" 
+							class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors">
+						<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m-2.4-1c-.216 0-.4.216-.4.4v.8c0 .184.184.4.4.4h1.6c.216 0 .4-.216.4-.4V4.2c0-.184-.184-.4-.4-.4H3c-.216 0-.4.216-.4.4V3z"></path>
+							<circle cx="9" cy="20" r="1"></circle>
+							<circle cx="20" cy="20" r="1"></circle>
+						</svg>
+						Panier
+					</button>
+				{% elseif not app.user %}
+					<a href="{{ path('app_login') }}" 
+					   class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-gray-400 rounded-lg hover:bg-gray-500 transition-colors">
+						<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+						</svg>
+						Connexion
+					</a>
+				{% endif %}
+			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+function addToCart(productId) {
+	if (!{{ app.user ? 'true' : 'false' }}) {
+		window.location.href = '{{ path('app_login') }}';
+		return;
+	}
+
+	fetch(`/products/${productId}/add-to-cart`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-Requested-With': 'XMLHttpRequest'
+		},
+		body: JSON.stringify({ quantity: 1 })
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			// Animation de succès
+			const button = event.target.closest('button');
+			const originalContent = button.innerHTML;
+			button.innerHTML = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>Ajouté !';
+			button.disabled = true;
+			button.classList.remove('bg-teal-600', 'hover:bg-teal-700');
+			button.classList.add('bg-green-600');
+			
+			setTimeout(() => {
+				button.innerHTML = originalContent;
+				button.disabled = false;
+				button.classList.remove('bg-green-600');
+				button.classList.add('bg-teal-600', 'hover:bg-teal-700');
+			}, 2000);
+			
+			// Notification
+			showNotification('Produit ajouté au panier !', 'success');
+		} else {
+			showNotification(data.error || 'Erreur lors de l\'ajout au panier', 'error');
+		}
+	})
+	.catch(error => {
+		console.error('Erreur:', error);
+		showNotification('Erreur lors de l\'ajout au panier', 'error');
+	});
+}
+
+function quickAddToCart(productId) {
+	addToCart(productId);
+}
+
+function showNotification(message, type) {
+	// Créer la notification
+	const notification = document.createElement('div');
+	notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full opacity-0 ${
+		type === 'success' ? 'bg-green-100 border border-green-200 text-green-800' : 'bg-red-100 border border-red-200 text-red-800'
+	}`;
+	
+	notification.innerHTML = `
+		<div class="flex items-center">
+			<svg class="w-5 h-5 mr-3 ${type === 'success' ? 'text-green-600' : 'text-red-600'}" fill="currentColor" viewBox="0 0 20 20">
+				${type === 'success' 
+					? '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>'
+					: '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>'
+				}
+			</svg>
+			<span class="font-medium">${message}</span>
+		</div>
+	`;
+	
+	document.body.appendChild(notification);
+	
+	// Animation d'entrée
+	setTimeout(() => {
+		notification.classList.remove('translate-x-full', 'opacity-0');
+	}, 100);
+	
+	// Animation de sortie
+	setTimeout(() => {
+		notification.classList.add('translate-x-full', 'opacity-0');
+		setTimeout(() => {
+			document.body.removeChild(notification);
+		}, 300);
+	}, 3000);
+}
+</script>

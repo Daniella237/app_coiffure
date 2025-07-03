@@ -23,7 +23,7 @@
 				<a href="{{ path('services') }}" class="btn-primary text-lg px-8 py-4">
 					Découvrir nos services
 				</a>
-				<a href="#products" class="btn-secondary text-lg px-8 py-4">
+				<a href="{{ path('products') }}" class="btn-secondary text-lg px-8 py-4">
 					Voir nos produits
 				</a>
 			</div>
@@ -63,12 +63,12 @@
 
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 			{% for product in products|slice(0, 4) %}
-				{% include 'components/products/product.html.twig' with { product: product } %}
+				{% include 'components/Products/product.html.twig' with { product: product } %}
 			{% endfor %}
 		</div>
 
 		<div class="text-center mt-12">
-			<a href="/products" class="btn-primary text-lg px-8 py-4">
+			<a href="{{ path('products') }}" class="btn-primary text-lg px-8 py-4">
 				Voir tous nos produits
 			</a>
 		</div>

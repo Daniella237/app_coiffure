@@ -1,5 +1,10 @@
 twig:
     file_name_pattern: '*.twig'
+    debug: true
+    strict_variables: true
+    cache: true
+    auto_reload: true
+    optimizations: 0
 
 when@test:
     twig:

@@ -58,6 +58,9 @@ class Order
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeSessionId = null;
+
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', cascade: ['persist', 'remove'])]
     private Collection $orderItems;
 
@@ -240,5 +243,37 @@ class Order
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTime();
+    }
+
+    public function getStripeSessionId(): ?string
+    {
+        return $this->stripeSessionId;
+    }
+
+    public function setStripeSessionId(?string $stripeSessionId): static
+    {
+        $this->stripeSessionId = $stripeSessionId;
+        return $this;
+    }
+
+    // Méthodes aliases pour compatibilité avec les templates
+    public function getClient(): ?User
+    {
+        return $this->getUser();
+    }
+
+    public function setClient(?User $client): static
+    {
+        return $this->setUser($client);
+    }
+
+    public function getOrderDate(): ?\DateTimeInterface
+    {
+        return $this->getCreatedAt();
+    }
+
+    public function setOrderDate(\DateTimeInterface $orderDate): static
+    {
+        return $this->setCreatedAt($orderDate);
     }
 } 

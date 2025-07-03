@@ -1,0 +1,228 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement réussi - Glowly{% endblock %}
+
+{% block body %}
+
+{% include 'components/header.html.twig' with {'user': app.user} %}
+
+<section class="py-16 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Animation de succès -->
+        <div class="text-center mb-12 animate-fade-in">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-8 animate-bounce">
+                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-green-900 to-emerald-900 bg-clip-text text-transparent mb-4">
+                Paiement réussi !
+            </h1>
+            <p class="text-xl text-gray-600 mb-2">
+                Merci pour votre commande, {{ app.user.fullName }} !
+            </p>
+            <p class="text-lg text-gray-600">
+                Votre commande a été confirmée et sera traitée dans les plus brefs délais.
+            </p>
+        </div>
+
+        <!-- Informations de commande -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <!-- Détails de la commande -->
+            <div class="bg-white/70 backdrop-blur-lg rounded-3xl shadow-xl border border-white/20 p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Commande #{{ order.id }}
+                </h2>
+
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-700">Date de commande</span>
+                        <span class="text-gray-900">{{ order.orderDate|date('d/m/Y à H:i') }}</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-700">Statut</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Payée
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                        <span class="font-medium text-gray-700">Montant total</span>
+                        <span class="text-xl font-bold text-green-600">{{ order.totalAmount }}€</span>
+                    </div>
+                    {% if session.payment_intent %}
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">ID de transaction</span>
+                            <span class="text-sm text-gray-600 font-mono">{{ session.payment_intent }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Articles commandés -->
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Articles commandés</h3>
+                <div class="space-y-3">
+                    {% for item in order.orderItems %}
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-xl">
+                            <div class="w-12 h-12 bg-gradient-to-br from-teal-200 to-emerald-300 rounded-lg overflow-hidden flex-shrink-0">
+                                {% if item.product.images and item.product.images|length > 0 %}
+                                    <img src="{{ item.product.images[0] }}" alt="{{ item.product.name }}" 
+                                         class="w-full h-full object-cover">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-medium text-gray-900">{{ item.product.name }}</h4>
+                                <p class="text-sm text-gray-600">Quantité: {{ item.quantity }}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold text-gray-900">{{ item.totalPrice }}€</div>
+                                <div class="text-xs text-gray-500">{{ item.price }}€ / unité</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Prochaines étapes -->
+            <div class="space-y-8">
+                <!-- Livraison -->
+                <div class="bg-white/70 backdrop-blur-lg rounded-3xl shadow-xl border border-white/20 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0a2 2 0 01-2-2v-4a2 2 0 00-2-2H8z"></path>
+                        </svg>
+                        Livraison
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-xs font-bold text-blue-600">1</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Préparation de votre commande</h4>
+                                <p class="text-sm text-gray-600">Votre commande est en cours de préparation dans nos entrepôts</p>
+                                <span class="text-xs text-blue-600 font-medium">En cours...</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-xs font-bold text-gray-400">2</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700">Expédition</h4>
+                                <p class="text-sm text-gray-600">Votre commande sera expédiée sous 24-48h</p>
+                                <span class="text-xs text-gray-400">En attente</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-xs font-bold text-gray-400">3</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700">Livraison</h4>
+                                <p class="text-sm text-gray-600">
+                                    {% if order.totalAmount >= 50 %}
+                                        Livraison gratuite estimée sous 2-3 jours ouvrés
+                                    {% else %}
+                                        Livraison estimée sous 2-3 jours ouvrés
+                                    {% endif %}
+                                </p>
+                                <span class="text-xs text-gray-400">En attente</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div class="bg-white/70 backdrop-blur-lg rounded-3xl shadow-xl border border-white/20 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Besoin d'aide ?
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 p-3 bg-purple-50 rounded-xl">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-purple-900">Un email de confirmation vous a été envoyé</p>
+                                <p class="text-sm text-purple-700">Vérifiez votre boîte de réception à {{ app.user.email }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-gray-900">Questions sur votre commande ?</p>
+                                <p class="text-sm text-gray-600">Contactez notre service client</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="text-center space-y-4">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="{{ path('client_orders') }}" 
+                   class="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Voir mes commandes
+                </a>
+                
+                <a href="{{ path('products') }}" 
+                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-8 rounded-xl transition-colors">
+                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    Continuer mes achats
+                </a>
+            </div>
+
+            <div class="mt-8 p-6 bg-gradient-to-r from-teal-50 to-emerald-50 rounded-2xl border border-teal-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Merci de votre confiance !</h3>
+                <p class="text-gray-600">
+                    Votre satisfaction est notre priorité. N'hésitez pas à nous laisser un avis sur nos produits une fois que vous les aurez reçus.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<script>
+// Animation de confettis au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation simple de célébration
+    setTimeout(() => {
+        const successIcon = document.querySelector('.animate-bounce');
+        if (successIcon) {
+            successIcon.style.animation = 'bounce 1s ease-in-out 3';
+        }
+    }, 500);
+});
+</script>
+
+{% endblock %} 
