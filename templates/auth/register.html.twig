@@ -250,7 +250,7 @@
                 <div class="text-center">
                     <p class="text-gray-600">
                         Déjà un compte ? 
-                        <a href="{{ path('app_login') }}" class="text-pink-600 hover:text-pink-700 font-medium">
+                        <a href="{{ path('app_login', redirect ? {'redirect': redirect} : {}) }}" class="text-pink-600 hover:text-pink-700 font-medium">
                             Se connecter
                         </a>
                     </p>
