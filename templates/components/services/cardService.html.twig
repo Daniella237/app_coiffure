@@ -1,16 +1,72 @@
-<div class="bg-white rounded-2xl shadow-lg p-8 card-hover border border-gray-100 h-96 flex flex-col">
-	<div class="w-full h-36 mb-4 flex-shrink-0 overflow-hidden">
-		<img src="{{ service.image }}" alt="{{ service.name }}" class="w-full h-full object-cover rounded-xl">
-	</div>
-	<div class="flex flex-col flex-grow">
-		<h3 class="text-xl font-bold text-gray-900 mb-3">{{ service.name }}</h3>
-		<p class="text-gray-600 mb-4 text-sm flex-grow">
-			{{ service.description }}
-		</p>
-		<div class="flex items-center justify-between mt-auto">
-			<span class="text-xl font-bold text-pink-500">À partir de
-				{{ service.price }}€</span>
-			<a href="/services" class="text-pink-500 hover:text-pink-600 font-semibold">Réserver →</a>
+<div class="service-card-wrapper h-full">
+	<div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl border border-white/20 p-4 h-full flex flex-col transition-all duration-300 hover:-translate-y-2 group">
+		<div class="relative w-full h-48 mb-6 flex-shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100">
+			{% if service.image %}
+				<img src="{{ service.image }}" loading="lazy" alt="{{ service.name }}" 
+					 class="w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover:scale-105"
+					 loading="lazy">
+			{% else %}
+				<div class="w-full h-full bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex items-center justify-center rounded-2xl">
+					<svg class="w-16 h-16 text-white opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1M12 7V5a1 1 0 011-1h1a1 1 0 011 1v2m-4 0V7a1 1 0 011-1h1a1 1 0 011 1v2"></path>
+					</svg>
+				</div>
+			{% endif %}
+			
+			<div class="absolute top-3 right-3">
+				<div class="bg-white/95 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg border border-white/30">
+					<span class="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+						{{ service.price }}€
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="flex flex-col flex-grow">
+			<div class="flex items-center justify-between mb-4">
+				<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+					<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+					</svg>
+					{{ service.category.name }}
+				</span>
+				<div class="flex items-center text-gray-500 text-sm">
+					<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					{{ service.durationMinutes }} min
+				</div>
+			</div>
+
+			<h3 class="text-xl font-bold text-gray-900 mb-3 line-height-tight">
+				{{ service.name }}
+			</h3>
+
+			<div class="flex-grow mb-6">
+				<p class="text-gray-600 text-sm leading-relaxed line-clamp-3">
+					{% if service.description %}
+						{{ service.description|length > 120 ? service.description|slice(0, 120) ~ '...' : service.description }}
+					{% else %}
+						Découvrez ce service de beauté personnalisé pour sublimer votre apparence.
+					{% endif %}
+				</p>
+			</div>
+
+			<div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+				<div class="flex flex-col">
+					<span class="text-sm text-gray-500 font-medium">À partir de</span>
+					<span class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+						{{ service.price }}€
+					</span>
+				</div>
+				<a href="{{ path('service_detail', {id: service.id}) }}" 
+				   class="service-card-btn group/btn">
+					<span class="mr-2">Voir détails</span>
+					<svg class="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+					</svg>
+				</a>
+			</div>
 		</div>
 	</div>
 </div>
