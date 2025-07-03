@@ -1,0 +1,48 @@
+# Dossiers Git
+.git
+.gitignore
+
+# Fichiers de documentation
+*.md
+README.md
+readme.md
+projet.md
+
+# Logs et cache
+var/log/*
+var/cache/*
+!var/log/.gitkeep
+!var/cache/.gitkeep
+
+# Dépendances (seront installées dans le container)
+vendor/
+node_modules/
+
+# Fichiers de configuration d'IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers temporaires
+*.tmp
+*.temp
+
+# Tests
+tests/
+phpunit.dist.xml
+
+# Fichiers Docker existants (éviter la récursion)
+Dockerfile
+.dockerignore
+
+# Assets compilés (seront regenerés)
+public/styles/
+
+# Fichiers de configuration spécifiques au développement local
+.env.local
+.env.*.local 
