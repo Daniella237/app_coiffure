@@ -293,7 +293,7 @@ class AppFixtures extends Fixture
         $admin = new User();
         $admin->setFirstName('Admin');
         $admin->setLastName('Glowly');
-        $admin->setEmail('admin@glowly.fr');
+        $admin->setEmail('admin@salon.fr');
         $admin->setPhone('+33 1 23 45 67 89');
         $admin->setIsActive(true);
         $admin->setRoles(['ROLE_ADMIN']);
