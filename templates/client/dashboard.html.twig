@@ -96,8 +96,15 @@
                                     {% elseif order.status == 'shipped' %}bg-purple-100 text-purple-800
                                     {% elseif order.status == 'delivered' %}bg-green-100 text-green-800
                                     {% elseif order.status == 'cancelled' %}bg-red-100 text-red-800
+                                    {% else %}bg-gray-100 text-gray-800
                                     {% endif %}">
-                                    {{ order.status|title }}
+                                    {% if order.status == 'pending' %}En attente
+                                    {% elseif order.status == 'processing' %}En traitement
+                                    {% elseif order.status == 'shipped' %}Expédiée
+                                    {% elseif order.status == 'delivered' %}Livrée
+                                    {% elseif order.status == 'cancelled' %}Annulée
+                                    {% else %}{{ order.status|title }}
+                                    {% endif %}
                                 </span>
                             </div>
                         </div>
@@ -131,16 +138,34 @@
                     {% for appointment in upcomingAppointments %}
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <div>
-                                <p class="font-medium text-gray-900">{{ appointment.service.name }}</p>
-                                <p class="text-sm text-gray-600">{{ appointment.date|date('d/m/Y H:i') }}</p>
-                                <p class="text-xs text-gray-500">avec {{ appointment.employee.user.firstName }}</p>
+                                <p class="font-medium text-gray-900">
+                                    {% if appointment.service %}
+                                        {{ appointment.service.name }}
+                                    {% else %}
+                                        Service non défini
+                                    {% endif %}
+                                </p>
+                                <p class="text-sm text-gray-600">{{ appointment.appointmentDate|date('d/m/Y H:i') }}</p>
+                                <p class="text-xs text-gray-500">
+                                    {% if appointment.employee and appointment.employee.user %}
+                                        avec {{ appointment.employee.user.firstName }}
+                                    {% else %}
+                                        Employé non assigné
+                                    {% endif %}
+                                </p>
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     {% if appointment.status == 'confirmed' %}bg-green-100 text-green-800
                                     {% elseif appointment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elseif appointment.status == 'cancelled' %}bg-red-100 text-red-800
+                                    {% elseif appointment.status == 'completed' %}bg-blue-100 text-blue-800
                                     {% else %}bg-gray-100 text-gray-800{% endif %}">
-                                    {{ appointment.status|title }}
+                                    {% if appointment.status == 'confirmed' %}Confirmé
+                                    {% elseif appointment.status == 'pending' %}En attente
+                                    {% elseif appointment.status == 'cancelled' %}Annulé
+                                    {% elseif appointment.status == 'completed' %}Terminé
+                                    {% else %}{{ appointment.status|title }}{% endif %}
                                 </span>
                             </div>
                         </div>

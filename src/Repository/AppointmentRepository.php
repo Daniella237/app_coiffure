@@ -27,6 +27,29 @@ class AppointmentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findUpcomingByUser($user, int $limit = null): array
+    {
+        $now = new \DateTime();
+        
+        $qb = $this->createQueryBuilder('a')
+            ->join('a.service', 's')
+            ->leftJoin('a.employee', 'e')
+            ->addSelect('s', 'e')
+            ->andWhere('a.client = :user')
+            ->andWhere('a.appointmentDate >= :now')
+            ->andWhere('a.status != :cancelled')
+            ->setParameter('user', $user)
+            ->setParameter('now', $now)
+            ->setParameter('cancelled', Appointment::STATUS_CANCELLED)
+            ->orderBy('a.appointmentDate', 'ASC');
+
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function findUpcomingAppointments(\DateTime $from = null): array
     {
         $from = $from ?? new \DateTime();

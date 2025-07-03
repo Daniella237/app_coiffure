@@ -155,6 +155,14 @@ class Order
         return $this;
     }
 
+    /**
+     * Méthode de compatibilité pour les templates
+     */
+    public function getTotal(): ?string
+    {
+        return $this->getTotalAmount();
+    }
+
     public function getShippingAddress(): ?array
     {
         return $this->shippingAddress;

@@ -237,7 +237,10 @@ class ClientController extends AbstractController
         $order = new Order();
         $order->setUser($user);
         $order->setStatus('pending');
-        $order->setTotal(0);
+        $order->setSubtotal('0');
+        $order->setTaxAmount('0');
+        $order->setShippingCost('0');
+        $order->setTotalAmount('0');
         
         $total = 0;
         foreach ($cartItems as $cartItem) {
@@ -252,7 +255,10 @@ class ClientController extends AbstractController
             $entityManager->persist($orderItem);
         }
         
-        $order->setTotal($total);
+        $order->setSubtotal((string) $total);
+        $order->setTaxAmount('0');
+        $order->setShippingCost('0');
+        $order->setTotalAmount((string) $total);
         $entityManager->persist($order);
         
         // Vider le panier
