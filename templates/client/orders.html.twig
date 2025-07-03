@@ -4,8 +4,6 @@
 
 {% block body %}
 
-{% include 'components/header.html.twig' with {'user': app.user} %}
-
 <section class="py-16 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 min-h-screen">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête -->
@@ -59,7 +57,7 @@
                         {% set totalSpent = 0 %}
                         {% for order in orders %}
                             {% if order.status == 'paid' %}
-                                {% set totalSpent = totalSpent + order.totalAmount %}
+                                {% set totalSpent = totalSpent + order.total %}
                             {% endif %}
                         {% endfor %}
                         {{ totalSpent }}€
@@ -81,7 +79,7 @@
                                     Commande #{{ order.id }}
                                 </h3>
                                 <p class="text-sm text-gray-600">
-                                    Passée le {{ order.orderDate|date('d/m/Y à H:i') }}
+                                    Passée le {{ order.createdAt|date('d/m/Y à H:i') }}
                                 </p>
                             </div>
                             
@@ -126,7 +124,7 @@
 
                                 <!-- Prix total -->
                                 <div class="text-right">
-                                    <p class="text-2xl font-bold text-teal-600">{{ order.totalAmount }}€</p>
+                                    <p class="text-2xl font-bold text-teal-600">{{ order.total }}€</p>
                                 </div>
                             </div>
                         </div>
@@ -152,7 +150,7 @@
                                         <div class="flex-grow min-w-0">
                                             <h5 class="font-medium text-gray-900 truncate">{{ item.product.name }}</h5>
                                             <p class="text-sm text-gray-600">Quantité: {{ item.quantity }}</p>
-                                            <p class="text-sm font-semibold text-teal-600">{{ item.totalPrice }}€</p>
+                                            <p class="text-sm font-semibold text-teal-600">{{ (item.price * item.quantity)|number_format(2, ',', ' ') }}€</p>
                                         </div>
                                     </div>
                                 {% endfor %}
