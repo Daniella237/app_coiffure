@@ -1,0 +1,305 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Produits - Glowly{% endblock %}
+
+{% block body %}
+
+{% include 'components/header.html.twig' with {'user': app.user} %}
+
+<section class="py-16 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête avec animation -->
+        <div class="text-center mb-16 animate-fade-in">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-full mb-6">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-teal-900 to-emerald-900 bg-clip-text text-transparent mb-6">
+                Nos Produits
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Découvrez notre sélection de produits de beauté et soins capillaires professionnels
+            </p>
+        </div>
+
+        <!-- Filtres modernisés -->
+        <div class="bg-white/70 backdrop-blur-lg rounded-3xl shadow-xl border border-white/20 p-8 mb-12 animate-slide-up">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                    Filtres & Tri
+                </h2>
+                <button id="toggleFilters" class="lg:hidden bg-teal-100 hover:bg-teal-200 text-teal-700 px-4 py-2 rounded-full transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <form method="GET" id="filterForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6" id="filterGrid">
+                    <!-- Filtre par catégorie -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Catégorie
+                        </label>
+                        <select name="category" class="filter-select">
+                            <option value="">Toutes les catégories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {{ filters.category == category.id ? 'selected' : '' }}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Prix -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            Prix (€)
+                        </label>
+                        <div class="flex space-x-2">
+                            <input type="number" name="min_price" value="{{ filters.min_price }}" 
+                                   placeholder="Min" min="0" step="0.01" class="filter-input flex-1">
+                            <span class="flex items-center text-gray-400">-</span>
+                            <input type="number" name="max_price" value="{{ filters.max_price }}" 
+                                   placeholder="Max" min="0" step="0.01" class="filter-input flex-1">
+                        </div>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                            Disponibilité
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="in_stock" value="1" {{ filters.in_stock ? 'checked' : '' }} 
+                                   class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                            <span class="text-sm text-gray-700">En stock uniquement</span>
+                        </label>
+                    </div>
+
+                    <!-- Tri -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                            </svg>
+                            Trier par
+                        </label>
+                        <div class="flex space-x-2">
+                            <select name="sort" class="filter-select flex-1">
+                                <option value="name" {{ filters.sort == 'name' ? 'selected' : '' }}>Nom</option>
+                                <option value="price" {{ filters.sort == 'price' ? 'selected' : '' }}>Prix</option>
+                                <option value="stock" {{ filters.sort == 'stock' ? 'selected' : '' }}>Stock</option>
+                            </select>
+                            <select name="order" class="filter-select flex-1">
+                                <option value="asc" {{ filters.order == 'asc' ? 'selected' : '' }}>↑ Croissant</option>
+                                <option value="desc" {{ filters.order == 'desc' ? 'selected' : '' }}>↓ Décroissant</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                            </svg>
+                            Actions
+                        </label>
+                        <div class="flex space-x-2">
+                            <button type="submit" class="btn-modern-primary flex-1">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                Filtrer
+                            </button>
+                            <a href="{{ path('products') }}" class="btn-modern-secondary flex-1">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Reset
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Résultats avec compteur modernisé -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="bg-white/70 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
+                <p class="text-gray-700 font-medium">
+                    {% if products|length > 0 %}
+                        <span class="text-teal-600 font-bold">{{ products|length }}</span> produits trouvés
+                        <span class="text-gray-400 mx-2">•</span>
+                        <span class="text-sm">Page {{ currentPage }} sur {{ totalPages }}</span>
+                    {% else %}
+                        <span class="text-red-500">Aucun produit trouvé</span>
+                    {% endif %}
+                </p>
+            </div>
+            
+            <!-- Vue grid/list toggle -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 p-1 hidden lg:flex">
+                <button id="gridView" class="view-toggle active">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                </button>
+                <button id="listView" class="view-toggle">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Liste des produits avec animations -->
+        {% if products|length > 0 %}
+            <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+                {% for product in products %}
+                    <div class="product-card animate-fade-in-up" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                        {% include 'components/Products/product.html.twig' with { product: product } %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination modernisée -->
+            {% if totalPages > 1 %}
+                <div class="flex justify-center items-center space-x-2 mb-8">
+                    <div class="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 p-2 flex items-center space-x-1">
+                        <!-- Bouton précédent -->
+                        {% if currentPage > 1 %}
+                            <a href="{{ path('products', filters|merge({'page': currentPage - 1})) }}" 
+                               class="pagination-btn">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        {% endif %}
+
+                        <!-- Numéros de page -->
+                        {% set startPage = max(1, currentPage - 2) %}
+                        {% set endPage = min(totalPages, currentPage + 2) %}
+
+                        {% if startPage > 1 %}
+                            <a href="{{ path('products', filters|merge({'page': 1})) }}" class="pagination-btn">1</a>
+                            {% if startPage > 2 %}
+                                <span class="px-2 text-gray-400">…</span>
+                            {% endif %}
+                        {% endif %}
+
+                        {% for page in startPage..endPage %}
+                            {% if page == currentPage %}
+                                <span class="pagination-btn-active">{{ page }}</span>
+                            {% else %}
+                                <a href="{{ path('products', filters|merge({'page': page})) }}" class="pagination-btn">{{ page }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if endPage < totalPages %}
+                            {% if endPage < totalPages - 1 %}
+                                <span class="px-2 text-gray-400">…</span>
+                            {% endif %}
+                            <a href="{{ path('products', filters|merge({'page': totalPages})) }}" class="pagination-btn">{{ totalPages }}</a>
+                        {% endif %}
+
+                        <!-- Bouton suivant -->
+                        {% if currentPage < totalPages %}
+                            <a href="{{ path('products', filters|merge({'page': currentPage + 1})) }}" 
+                               class="pagination-btn">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- Message d'absence de résultats -->
+            <div class="text-center py-16 animate-fade-in">
+                <div class="bg-white/70 backdrop-blur-lg rounded-3xl shadow-xl border border-white/20 p-12 max-w-md mx-auto">
+                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun produit trouvé</h3>
+                    <p class="text-gray-600 mb-6">Essayez de modifier vos critères de recherche</p>
+                    <a href="{{ path('products') }}" class="btn-modern-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Voir tous les produits
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% include 'components/footer.html.twig' with { 'services': services, 'products': products } %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle filtres sur mobile
+    const toggleFilters = document.getElementById('toggleFilters');
+    const filterGrid = document.getElementById('filterGrid');
+    
+    if (toggleFilters) {
+        toggleFilters.addEventListener('click', function() {
+            filterGrid.classList.toggle('hidden');
+        });
+    }
+
+    // Toggle vue grille/liste
+    const gridView = document.getElementById('gridView');
+    const listView = document.getElementById('listView');
+    const productsGrid = document.getElementById('productsGrid');
+
+    if (gridView && listView) {
+        gridView.addEventListener('click', function() {
+            productsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12';
+            gridView.classList.add('active');
+            listView.classList.remove('active');
+        });
+
+        listView.addEventListener('click', function() {
+            productsGrid.className = 'space-y-6 mb-12';
+            listView.classList.add('active');
+            gridView.classList.remove('active');
+        });
+    }
+
+    // Auto-submit du formulaire lors du changement de filtres
+    const filterForm = document.getElementById('filterForm');
+    const filterInputs = filterForm.querySelectorAll('input, select');
+    
+    filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (input.type !== 'checkbox' || input.checked) {
+                setTimeout(() => filterForm.submit(), 300);
+            } else if (input.type === 'checkbox' && !input.checked) {
+                setTimeout(() => filterForm.submit(), 300);
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %} 

@@ -5,10 +5,14 @@ namespace App\Controller;
 use App\Repository\ServiceRepository;
 use App\Repository\ServiceCategoryRepository;
 use App\Repository\ProductRepository;
+use App\Repository\ProductCategoryRepository;
 use App\Repository\EmployeeRepository;
 use App\Repository\AppointmentRepository;
+use App\Repository\CartItemRepository;
 use App\Entity\Appointment;
 use App\Entity\Service;
+use App\Entity\Product;
+use App\Entity\CartItem;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -92,6 +96,7 @@ class HomeController extends AbstractController
 
         $categories = $categoryRepository->findActiveCategories();
         $products = $productRepository->findAll();
+        $services = $serviceRepository->findAll();
         return $this->render('home/services.html.twig', [
             'services' => $services,
             'categories' => $categories,
@@ -105,6 +110,7 @@ class HomeController extends AbstractController
                 'order' => $sortOrder,
             ],
             'products' => $products,
+            'services' => $services,
         ]);
     }
 
@@ -197,5 +203,183 @@ class HomeController extends AbstractController
         $em->flush();
 
         return new JsonResponse(['success' => 'Réservation créée avec succès', 'id' => $appointment->getId()]);
+    }
+
+    #[Route('/products', name: 'products')]
+    public function products(
+        Request $request,
+        ProductRepository $productRepository,
+        ProductCategoryRepository $categoryRepository,
+        ServiceRepository $serviceRepository
+    ): Response {
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 12;
+        $categoryId = $request->query->get('category');
+        $minPrice = $request->query->get('min_price');
+        $maxPrice = $request->query->get('max_price');
+        $sortBy = $request->query->get('sort', 'name');
+        $sortOrder = $request->query->get('order', 'asc');
+        $inStock = $request->query->get('in_stock');
+
+        $queryBuilder = $productRepository->createQueryBuilder('p')
+            ->join('p.category', 'c')
+            ->andWhere('p.isActive = :active')
+            ->andWhere('c.isActive = :active')
+            ->setParameter('active', true);
+
+        if ($categoryId) {
+            $queryBuilder->andWhere('p.category = :categoryId')
+                ->setParameter('categoryId', $categoryId);
+        }
+
+        if ($minPrice) {
+            $queryBuilder->andWhere('p.price >= :minPrice')
+                ->setParameter('minPrice', $minPrice);
+        }
+        if ($maxPrice) {
+            $queryBuilder->andWhere('p.price <= :maxPrice')
+                ->setParameter('maxPrice', $maxPrice);
+        }
+
+        if ($inStock) {
+            $queryBuilder->andWhere('p.stockQuantity > 0');
+        }
+
+        switch ($sortBy) {
+            case 'price':
+                $queryBuilder->orderBy('p.price', $sortOrder);
+                break;
+            case 'stock':
+                $queryBuilder->orderBy('p.stockQuantity', $sortOrder);
+                break;
+            case 'name':
+            default:
+                $queryBuilder->orderBy('p.name', $sortOrder);
+                break;
+        }
+
+        $totalResults = $queryBuilder->getQuery()->getResult();
+        $totalPages = ceil(count($totalResults) / $limit);
+        $services = $serviceRepository->findAll();
+
+        $products = $queryBuilder
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        $categories = $categoryRepository->createQueryBuilder('c')
+            ->andWhere('c.isActive = :active')
+            ->setParameter('active', true)
+            ->orderBy('c.sortOrder', 'ASC')
+            ->addOrderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('home/products.html.twig', [
+            'products' => $products,
+            'services' => $services,
+            'categories' => $categories,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'filters' => [
+                'category' => $categoryId,
+                'min_price' => $minPrice,
+                'max_price' => $maxPrice,
+                'sort' => $sortBy,
+                'order' => $sortOrder,
+                'in_stock' => $inStock,
+            ],
+        ]);
+    }
+
+    #[Route('/products/{id}', name: 'product_detail', requirements: ['id' => '\d+'])]
+    public function productDetail(
+        Product $product,
+        ProductRepository $productRepository,
+        ServiceRepository $serviceRepository,
+    ): Response {
+        if (!$product->isActive() || !$product->getCategory()->isActive()) {
+            throw $this->createNotFoundException('Produit non trouvé');
+        }
+
+        // Produits similaires de la même catégorie
+        $similarProducts = $productRepository->createQueryBuilder('p')
+            ->join('p.category', 'c')
+            ->andWhere('p.category = :category')
+            ->andWhere('p.id != :currentProduct')
+            ->andWhere('p.isActive = :active')
+            ->andWhere('c.isActive = :active')
+            ->setParameter('category', $product->getCategory())
+            ->setParameter('currentProduct', $product->getId())
+            ->setParameter('active', true)
+            ->setMaxResults(4)
+            ->orderBy('p.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $services = $serviceRepository->findAll();
+        $products = $productRepository->findAll();
+        return $this->render('home/product_detail.html.twig', [
+            'product' => $product,
+            'similarProducts' => $similarProducts,
+            'services' => $services,
+            'products' => $products,
+        ]);
+    }
+
+    #[Route('/products/{id}/add-to-cart', name: 'product_add_to_cart', methods: ['POST'])]
+    public function addToCart(
+        Product $product,
+        Request $request,
+        EntityManagerInterface $em,
+        CartItemRepository $cartItemRepository
+    ): JsonResponse {
+        if (!$this->getUser()) {
+            return new JsonResponse(['error' => 'Vous devez être connecté pour ajouter au panier'], 401);
+        }
+
+        if (!$product->isActive() || !$product->getCategory()->isActive()) {
+            return new JsonResponse(['error' => 'Produit non disponible'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $quantity = $data['quantity'] ?? 1;
+
+        if ($quantity <= 0) {
+            return new JsonResponse(['error' => 'Quantité invalide'], 400);
+        }
+
+        if ($product->getStockQuantity() < $quantity) {
+            return new JsonResponse(['error' => 'Stock insuffisant'], 400);
+        }
+
+        // Vérifier si le produit est déjà dans le panier
+        $existingCartItem = $cartItemRepository->findOneBy([
+            'user' => $this->getUser(),
+            'product' => $product
+        ]);
+
+        if ($existingCartItem) {
+            $newQuantity = $existingCartItem->getQuantity() + $quantity;
+            if ($product->getStockQuantity() < $newQuantity) {
+                return new JsonResponse(['error' => 'Stock insuffisant pour cette quantité totale'], 400);
+            }
+            $existingCartItem->setQuantity($newQuantity);
+        } else {
+            $cartItem = new CartItem();
+            $cartItem->setUser($this->getUser());
+            $cartItem->setProduct($product);
+            $cartItem->setQuantity($quantity);
+            $em->persist($cartItem);
+        }
+
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => 'Produit ajouté au panier',
+            'quantity' => $quantity,
+            'product_name' => $product->getName()
+        ]);
     }
 } 
