@@ -236,6 +236,7 @@ class AppFixtures extends Fixture
                 $manager->persist($service);
             }
         }
+        $manager->flush();
 
         $productCategories = [
             'Perruques' => [
@@ -315,11 +316,12 @@ class AppFixtures extends Fixture
                 $manager->persist($product);
             }
         }
+        $manager->flush();
 
         $admin = new User();
         $admin->setFirstName('Admin');
         $admin->setLastName('Glowly');
-        $admin->setEmail('admin@glowly.fr');
+        $admin->setEmail('admin@salon.fr');
         $admin->setPhone('+33 1 23 45 67 89');
         $admin->setIsActive(true);
         $admin->setRoles(['ROLE_ADMIN']);
@@ -408,16 +410,21 @@ class AppFixtures extends Fixture
                 'Retouche rapide'
             ];
 
+            $completedCount = 0;
             for ($i = 0; $i < 50; $i++) {
                 $appointment = new Appointment();
                 $appointment->setClient($clientEntities[array_rand($clientEntities)]);
                 $appointment->setEmployee($employeeEntities[array_rand($employeeEntities)]);
                 $appointment->setService($services[array_rand($services)]);
-                
+                $appointment->setPrice($appointment->getService()->getPrice());
                 $daysOffset = rand(-30, 60);
                 $appointment->setAppointmentDate(new \DateTime('+' . $daysOffset . ' days'));
-                
-                $appointment->setStatus($statuses[array_rand($statuses)]);
+                if ($completedCount < 10) {
+                    $appointment->setStatus('completed');
+                    $completedCount++;
+                } else {
+                    $appointment->setStatus($statuses[array_rand($statuses)]);
+                }
                 $appointment->setNotes($notes[array_rand($notes)] . ' #' . ($i + 1));
                 $manager->persist($appointment);
             }
@@ -464,11 +471,17 @@ class AppFixtures extends Fixture
                 ]
             ];
 
+            $deliveredCount = 0;
             for ($i = 0; $i < 30; $i++) {
                 $order = new Order();
                 $order->setUser($clientEntities[array_rand($clientEntities)]);
                 $order->setOrderNumber('CMD' . str_pad($i + 1, 4, '0', STR_PAD_LEFT));
-                $order->setStatus($orderStatuses[array_rand($orderStatuses)]);
+                if ($deliveredCount < 10) {
+                    $order->setStatus('delivered');
+                    $deliveredCount++;
+                } else {
+                    $order->setStatus($orderStatuses[array_rand($orderStatuses)]);
+                }
                 $order->setTotalAmount('0');
                 $order->setSubtotal('0');
                 $order->setTaxAmount('0');

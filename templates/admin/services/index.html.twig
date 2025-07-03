@@ -77,6 +77,16 @@
                                 <a href="{{ path('admin_service_edit', {'id': service.id}) }}" class="btn btn-primary btn-sm flex-1">
                                     Modifier
                                 </a>
+                                <form method="POST" action="{{ path('admin_service_toggle', {'id': service.id}) }}" class="inline">
+                                    <button type="submit" class="btn btn-secondary btn-sm flex-1">
+                                        {{ service.isActive ? 'Désactiver' : 'Activer' }}
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ path('admin_service_delete', {'id': service.id}) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce service ?')">
+                                    <button type="submit" class="btn btn-danger btn-sm flex-1">
+                                        Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     {% else %}
@@ -96,14 +106,4 @@
             </a>
         </div>
     {% endfor %}
-
-    <!-- Actions rapides -->
-    <div class="card p-6 mt-8">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Actions Rapides</h3>
-        <div class="flex flex-wrap gap-3">
-            <a href="{{ path('admin_service_new') }}" class="btn btn-primary">
-                Nouveau Service
-            </a>
-        </div>
-    </div>
 {% endblock %} 

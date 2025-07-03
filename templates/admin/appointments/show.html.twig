@@ -1,0 +1,54 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détail du Rendez-vous | Admin{% endblock %}
+
+{% block content %}
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Détail du Rendez-vous</h1>
+        <a href="{{ path('admin_appointments') }}" class="btn btn-outline flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            <span>Retour à la liste</span>
+        </a>
+    </div>
+
+    <div class="max-w-2xl mx-auto">
+        <div class="card p-8">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                <dt class="font-semibold">Client :</dt>
+                <dd>{{ appointment.client.firstName }} {{ appointment.client.lastName }} ({{ appointment.client.email }})</dd>
+                <dt class="font-semibold">Service :</dt>
+                <dd>{{ appointment.service.name }}</dd>
+                <dt class="font-semibold">Employé :</dt>
+                <dd>{{ appointment.employee.user.firstName }} {{ appointment.employee.user.lastName }}</dd>
+                <dt class="font-semibold">Date & Heure :</dt>
+                <dd>{{ appointment.appointmentDate|date('d/m/Y H:i') }}</dd>
+                <dt class="font-semibold">Statut :</dt>
+                <dd>
+                    {% if appointment.status == 'completed' %}
+                        <span class="badge badge-success">Terminé</span>
+                    {% elseif appointment.status == 'confirmed' %}
+                        <span class="badge badge-primary">Confirmé</span>
+                    {% elseif appointment.status == 'pending' %}
+                        <span class="badge badge-warning">En attente</span>
+                    {% elseif appointment.status == 'cancelled' %}
+                        <span class="badge badge-danger">Annulé</span>
+                    {% else %}
+                        <span class="badge badge-secondary">{{ appointment.status }}</span>
+                    {% endif %}
+                </dd>
+                <dt class="font-semibold">Prix :</dt>
+                <dd>{{ appointment.price }}€</dd>
+                <dt class="font-semibold">Notes :</dt>
+                <dd>{{ appointment.notes|default('-') }}</dd>
+            </dl>
+
+            {% if appointment.status != 'cancelled' %}
+                <form method="POST" action="{{ path('admin_appointment_cancel', {'id': appointment.id}) }}" class="mt-8 text-right" onsubmit="return confirm('Voulez-vous vraiment annuler ce rendez-vous ?');">
+                    <button type="submit" class="btn btn-danger">Annuler le rendez-vous</button>
+                </form>
+            {% else %}
+                <div class="mt-8 text-center text-red-600 font-semibold">Ce rendez-vous est annulé.</div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

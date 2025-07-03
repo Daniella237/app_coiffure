@@ -5,8 +5,9 @@
 {% block content %}
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold text-gray-800"> Modifier le Rendez-vous</h1>
-        <a href="{{ path('admin_appointment_show', {'id': appointment.id}) }}" class="btn btn-outline">
-            ← Retour
+        <a href="{{ path('admin_appointment_show', {'id': appointment.id}) }}" class="btn btn-outline flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            <span>Retour</span>
         </a>
     </div>
 
@@ -17,11 +18,17 @@
                 <p class="text-gray-600">Modifiez les informations du rendez-vous ci-dessous</p>
             </div>
 
-            <form method="post" class="space-y-6" id="editForm">
+            <form method="post" class="space-y-6" id="editForm" novalidate>
+                {% set isPast = appointment.appointmentDate and appointment.appointmentDate < ("now"|date("U")|date('Y-m-d H:i:s')) %}
+                {% if isPast %}
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        Impossible de modifier un rendez-vous dont la date/heure est déjà passée.
+                    </div>
+                {% endif %}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="appointment_client" class="form-label">Client <span class="asterisk-red">*</span></label>
-                        <select id="appointment_client" name="appointment[client]" class="form-input" required>
+                        <select id="appointment_client" name="appointment[client]" class="form-input">
                             <option value="">Sélectionner un client</option>
                             {% for user in users %}
                                 <option value="{{ user.id }}" {% if appointment.client and appointment.client.id == user.id %}selected{% endif %}>
@@ -33,7 +40,7 @@
 
                     <div>
                         <label for="appointment_service" class="form-label">Service <span class="asterisk-red">*</span></label>
-                        <select id="appointment_service" name="appointment[service]" class="form-input" required>
+                        <select id="appointment_service" name="appointment[service]" class="form-input">
                             <option value="">Sélectionner un service</option>
                             {% for service in services %}
                                 <option value="{{ service.id }}" {% if appointment.service and appointment.service.id == service.id %}selected{% endif %}>
@@ -45,7 +52,7 @@
 
                     <div>
                         <label for="appointment_employee" class="form-label">Employé <span class="asterisk-red">*</span></label>
-                        <select id="appointment_employee" name="appointment[employee]" class="form-input" required>
+                        <select id="appointment_employee" name="appointment[employee]" class="form-input">
                             <option value="">Sélectionner un employé</option>
                             {% for employee in employees %}
                                 <option value="{{ employee.id }}" {% if appointment.employee and appointment.employee.id == employee.id %}selected{% endif %}>
@@ -57,17 +64,17 @@
 
                     <div class="mb-4">
                         <label for="appointment_date" class="form-label">Date <span class="asterisk-red">*</span></label>
-                        <input type="date" id="appointment_date" name="appointment[date]" class="form-input" value="{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d') : '' }}" required>
+                        <input type="date" id="appointment_date" name="appointment[date]" class="form-input" value="{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d') : '' }}">
                     </div>
 
                     <div class="mb-4">
                         <label for="appointment_time" class="form-label">Heure <span class="asterisk-red">*</span></label>
-                        <input type="time" id="appointment_time" name="appointment[time]" class="form-input" value="{{ appointment.appointmentDate ? appointment.appointmentDate|date('H:i') : '' }}" required>
+                        <input type="time" id="appointment_time" name="appointment[time]" class="form-input" value="{{ appointment.appointmentDate ? appointment.appointmentDate|date('H:i') : '' }}">
                     </div>
 
                     <div>
                         <label for="appointment_status" class="form-label">Statut <span class="asterisk-red">*</span></label>
-                        <select id="appointment_status" name="appointment[status]" class="form-input" required>
+                        <select id="appointment_status" name="appointment[status]" class="form-input">
                             <option value="pending" {% if appointment.status == 'pending' %}selected{% endif %}>En attente</option>
                             <option value="confirmed" {% if appointment.status == 'confirmed' %}selected{% endif %}>Confirmé</option>
                             <option value="completed" {% if appointment.status == 'completed' %}selected{% endif %}>Terminé</option>
@@ -82,7 +89,7 @@
                 </div>
 
                 <div class="flex justify-center gap-4 pt-8 border-t border-gray-200">
-                    <button type="submit" class="btn btn-primary px-8 py-3" id="submitBtn">
+                    <button type="submit" class="btn btn-primary px-8 py-3" id="submitBtn" {% if isPast %}disabled{% endif %}>
                          Enregistrer les modifications
                     </button>
                     <a href="{{ path('admin_appointments') }}" class="btn btn-outline px-8 py-3">

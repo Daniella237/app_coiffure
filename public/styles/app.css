@@ -1,4 +1,5 @@
-@import "tailwindcss/preflight";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
 /* Custom styles for the beauty salon */
@@ -17,5 +18,50 @@
   
   .gradient-bg {
     @apply bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium font-semibold rounded-lg transition-all duration-300 cursor-pointer no-underline min-h-[44px];
+  }
+  .btn-small {
+    @apply inline-flex items-center justify-center px-3 py-2 border border-transparent text-xs font-medium font-semibold rounded-md transition-all duration-300 cursor-pointer no-underline min-h-[36px];
+  }
+  .btn-primary {
+    @apply bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700 hover:border-indigo-700 hover:-translate-y-0.5;
+  }
+  .btn-secondary {
+    @apply bg-gray-600 text-white border-gray-600 hover:bg-gray-700 hover:border-gray-700 hover:-translate-y-0.5;
+  }
+  .btn-success {
+    @apply bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 hover:-translate-y-0.5;
+  }
+  .btn-danger {
+    @apply bg-rose-600 text-white border-rose-600 hover:bg-rose-700 hover:border-rose-700 hover:-translate-y-0.5;
+  }
+  .btn-warning {
+    @apply bg-amber-500 text-white border-amber-500 hover:bg-amber-600 hover:border-amber-600 hover:-translate-y-0.5;
+  }
+  .btn-info-small {
+    @apply bg-cyan-500 text-white border-cyan-500 hover:bg-cyan-600 hover:border-cyan-600 hover:-translate-y-0.5;
+  }
+  .btn-primary-small {
+    @apply bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700 hover:border-indigo-700 hover:-translate-y-0.5;
+  }
+  .btn-secondary-small {
+    @apply bg-gray-600 text-white border-gray-600 hover:bg-gray-700 hover:border-gray-700 hover:-translate-y-0.5;
+  }
+  .btn-success-small {
+    @apply bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 hover:-translate-y-0.5;
+  }
+  .btn-danger-small {
+    @apply bg-rose-600 text-white border-rose-600 hover:bg-rose-700 hover:border-rose-700 hover:-translate-y-0.5;
+  }
+  .btn-warning-small {
+    @apply bg-amber-500 text-white border-amber-500 hover:bg-amber-600 hover:border-amber-600 hover:-translate-y-0.5;
+  }
+  .btn:focus, .btn-small:focus {
+    @apply outline-none ring-2 ring-indigo-400;
   }
 }

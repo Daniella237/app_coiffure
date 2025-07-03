@@ -111,6 +111,9 @@ class AdminController extends AbstractController
         // Employés disponibles
         $availableEmployees = $employeeRepository->count(['isAvailable' => true]);
 
+        // Statistiques rendez-vous par jour (pour le graph)
+        $dailyAppointments = $appointmentRepository->getDailyAppointments(30);
+
         return $this->render('admin/dashboard.html.twig', [
             'todayAppointments' => $todayAppointments,
             'monthlyRevenue' => $monthlyRevenue,
@@ -124,6 +127,7 @@ class AdminController extends AbstractController
             'totalEmployees' => $totalEmployees,
             'activeServices' => $activeServices,
             'activeProducts' => $activeProducts,
+            'dailyAppointments' => $dailyAppointments,
         ]);
     }
 } 

@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/admin/appointments')]
 #[IsGranted('ROLE_ADMIN')]
@@ -106,6 +107,11 @@ class AppointmentController extends AbstractController
         EmployeeRepository $employeeRepository
     ): Response {
         if ($request->isMethod('POST')) {
+            $submittedToken = $request->request->get('_csrf_token');
+            if (!\Symfony\Component\Security\Csrf\CsrfTokenManagerInterface::class || !$this->isCsrfTokenValid('create_appointment', $submittedToken)) {
+                $this->addFlash('error', 'Le token CSRF est invalide. Veuillez réessayer.');
+                return $this->redirectToRoute('admin_appointment_new');
+            }
             $clientId = $request->request->get('appointment[client]');
             $serviceId = $request->request->get('appointment[service]');
             $employeeId = $request->request->get('appointment[employee]');
@@ -149,7 +155,9 @@ class AppointmentController extends AbstractController
                                ->setAppointmentDate($appointmentDateTime)
                                ->setStatus($status)
                                ->setPrice($service->getPrice())
-                               ->setNotes($notes);
+                               ->setNotes($notes)
+                               ->setCreatedAt(new \DateTime())
+                               ->setUpdatedAt(new \DateTime());
 
                     $entityManager->persist($appointment);
                     $entityManager->flush();
@@ -309,6 +317,8 @@ class AppointmentController extends AbstractController
         EmployeeRepository $employeeRepository,
         UserRepository $userRepository
     ): Response {
+        $this->denyAccessUnlessGranted('APPOINTMENT_EDIT', $appointment);
+
         if ($request->isMethod('POST')) {
             // Log des données reçues
             error_log('POST reçu pour appointment ' . $appointment->getId());
