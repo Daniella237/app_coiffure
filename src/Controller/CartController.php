@@ -279,7 +279,7 @@ class CartController extends AbstractController
                     $order->setStatus('paid');
                     $order->setStripeSessionId($sessionId);
                     
-                    $totalAmount = 0;
+                    $subtotal = 0;
                     
                     foreach ($cartItems as $cartItem) {
                         $product = $cartItem->getProduct();
@@ -291,7 +291,7 @@ class CartController extends AbstractController
                         $orderItem->setQuantity($cartItem->getQuantity());
                         $orderItem->setPrice($product->getPrice());
                         
-                        $totalAmount += $orderItem->getTotalPrice();
+                        $subtotal += $orderItem->getTotalPrice();
                         
                         // Décrémenter le stock
                         $newStock = $product->getStockQuantity() - $cartItem->getQuantity();
@@ -301,7 +301,17 @@ class CartController extends AbstractController
                         $em->remove($cartItem); // Supprimer du panier
                     }
                     
+                    // Calculer les frais de livraison
+                    $shippingCost = $subtotal < 50 ? 4.90 : 0.00;
+                    $taxAmount = 0.00; // TVA à 0 pour simplifier
+                    $totalAmount = $subtotal + $shippingCost + $taxAmount;
+                    
+                    // Définir tous les champs obligatoires
+                    $order->setSubtotal($subtotal);
+                    $order->setTaxAmount($taxAmount);
+                    $order->setShippingCost($shippingCost);
                     $order->setTotalAmount($totalAmount);
+                    
                     $em->persist($order);
                     $em->flush();
                     
