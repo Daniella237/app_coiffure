@@ -317,6 +317,8 @@ class AppointmentController extends AbstractController
         EmployeeRepository $employeeRepository,
         UserRepository $userRepository
     ): Response {
+        $this->denyAccessUnlessGranted('APPOINTMENT_EDIT', $appointment);
+
         if ($request->isMethod('POST')) {
             // Log des données reçues
             error_log('POST reçu pour appointment ' . $appointment->getId());

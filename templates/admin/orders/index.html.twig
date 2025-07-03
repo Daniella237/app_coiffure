@@ -20,7 +20,7 @@
 
         <!-- En-tête de page -->
         <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-gray-800">🛒 Gestion des Commandes</h1>
+            <h1 class="text-3xl font-bold text-gray-800">{% include 'components/icons/shopping-cart.svg.twig' %} Gestion des Commandes</h1>
         </div>
 
         <!-- Cartes de statistiques -->
@@ -181,7 +181,7 @@
             {% else %}
                 <!-- État vide -->
                 <div class="text-center py-16 px-6">
-                    <div class="text-5xl mb-5 opacity-50">🛒</div>
+                    <div class="text-5xl mb-5 opacity-50">{% include 'components/icons/shopping-cart.svg.twig' %}</div>
                     <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucune commande trouvée</h3>
                     <p class="text-gray-500">Aucune commande ne correspond aux critères sélectionnés.</p>
                 </div>

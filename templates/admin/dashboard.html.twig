@@ -21,7 +21,7 @@
         <!-- En-tête du dashboard -->
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">🏠 Tableau de bord</h1>
+                <h1 class="text-3xl font-bold text-gray-800"> Tableau de bord</h1>
                 <p class="text-gray-600 mt-2">Bienvenue dans votre espace d'administration</p>
             </div>
             <div class="text-right">
@@ -31,7 +31,7 @@
 
         <!-- Statistiques principales -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Rendez-vous aujourd'hui -->
+            
             <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
                 <div class="flex items-center justify-between">
                     <div>
@@ -97,7 +97,7 @@
             <!-- Prochains rendez-vous -->
             <div class="bg-white rounded-xl shadow-lg p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-800">📅 Prochains rendez-vous</h2>
+                    <h2 class="text-xl font-bold text-gray-800">{% include 'components/icons/calendar.svg.twig' %} Prochains rendez-vous</h2>
                     <a href="{{ path('admin_appointments') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                         Voir tout →
                     </a>
@@ -105,7 +105,7 @@
                 
                 {% if upcomingAppointments is empty %}
                     <div class="text-center py-8">
-                        <div class="text-gray-400 text-6xl mb-4">📅</div>
+                        <div class="text-gray-400 text-6xl mb-4">{% include 'components/icons/calendar.svg.twig' %}</div>
                         <p class="text-gray-500">Aucun rendez-vous à venir</p>
                     </div>
                 {% else %}
@@ -147,7 +147,7 @@
             <!-- Commandes récentes -->
             <div class="bg-white rounded-xl shadow-lg p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-800">📦 Commandes récentes</h2>
+                    <h2 class="text-xl font-bold text-gray-800">{% include 'components/icons/box.svg.twig' %} Commandes récentes</h2>
                     <a href="{{ path('admin_orders') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                         Voir tout →
                     </a>
@@ -155,7 +155,7 @@
                 
                 {% if recentOrders is empty %}
                     <div class="text-center py-8">
-                        <div class="text-gray-400 text-6xl mb-4">📦</div>
+                        <div class="text-gray-400 text-6xl mb-4">{% include 'components/icons/box.svg.twig' %}</div>
                         <p class="text-gray-500">Aucune commande récente</p>
                     </div>
                 {% else %}
@@ -255,7 +255,7 @@
         <!-- Statistiques détaillées -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="bg-white rounded-xl shadow-lg p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Statistiques générales</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-4">{% include 'components/icons/clipboard.svg.twig' %} Statistiques générales</h3>
                 <div class="space-y-3">
                     <div class="flex justify-between">
                         <span class="text-gray-600">Total rendez-vous</span>
@@ -281,7 +281,7 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">📈 Commandes en cours</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-4">{% include 'components/icons/check.svg.twig' %} Commandes en cours</h3>
                 {% if pendingOrders is empty %}
                     <div class="text-center py-4">
                         <p class="text-gray-500 text-sm">Aucune commande en attente</p>
@@ -306,7 +306,7 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">🔔 Notifications</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-4">{% include 'components/icons/bell.svg.twig' %} Notifications</h3>
                 <div class="space-y-3">
                     {% if todayAppointments|length > 0 %}
                         <div class="flex items-center p-3 bg-blue-50 rounded-lg">
@@ -344,5 +344,43 @@
                 </div>
             </div>
         </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 mt-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Évolution des rendez-vous (30 derniers jours)</h3>
+            <canvas id="appointmentsChart" height="80"></canvas>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const dailyAppointments = {{ dailyAppointments|json_encode|raw }};
+        const labels = dailyAppointments.map(item => item.day);
+        const data = dailyAppointments.map(item => item.count);
+        const ctx = document.getElementById('appointmentsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Rendez-vous',
+                    data: data,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59,130,246,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Jour' } },
+                    y: { title: { display: true, text: 'Nombre de rendez-vous' }, beginAtZero: true }
+                }
+            }
+        });
+    </script>
 {% endblock %}

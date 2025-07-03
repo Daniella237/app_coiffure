@@ -139,10 +139,13 @@ class ProductController extends AbstractController
         Product $product,
         EntityManagerInterface $entityManager
     ): Response {
-        $entityManager->remove($product);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Produit supprimé avec succès !');
+        try {
+            $entityManager->remove($product);
+            $entityManager->flush();
+            $this->addFlash('success', 'Produit supprimé avec succès !');
+        } catch (\Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException | \Doctrine\DBAL\Exception\ConstraintViolationException $e) {
+            $this->addFlash('error', 'Vous ne pouvez pas supprimer ce produit car il est utilisé dans une ou plusieurs commandes.');
+        }
         return $this->redirectToRoute('admin_products');
     }
 

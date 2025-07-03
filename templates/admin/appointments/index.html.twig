@@ -16,7 +16,7 @@
     {% endfor %}
 
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">📅 Gestion des Rendez-vous</h1>
+        <h1 class="text-3xl font-bold text-gray-800">{% include 'components/icons/calendar.svg.twig' %} Gestion des Rendez-vous</h1>
         <a href="{{ path('admin_appointment_new') }}" class="btn btn-primary flex items-center gap-2">
             Nouveau Rendez-vous
         </a>
@@ -125,7 +125,7 @@
                     {% else %}
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                <div class="text-4xl mb-3 opacity-50">📅</div>
+                                <div class="text-4xl mb-3 opacity-50">{% include 'components/icons/calendar.svg.twig' %}</div>
                                 <p>Aucun rendez-vous trouvé</p>
                             </td>
                         </tr>

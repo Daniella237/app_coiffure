@@ -23,7 +23,7 @@ class StatisticsController extends AbstractController
         ProductRepository $productRepository
     ): Response {
         // Statistiques des rendez-vous par semaine (4 dernières semaines)
-        $weeklyAppointments = $appointmentRepository->getWeeklyAppointments(4);
+        $dailyAppointments = $appointmentRepository->getDailyAppointments(30);
         
         // Panier moyen des clients
         $averageCart = $orderRepository->getAverageCartValue();
@@ -55,7 +55,7 @@ class StatisticsController extends AbstractController
         ];
 
         return $this->render('admin/statistics/index.html.twig', [
-            'weeklyAppointments' => $weeklyAppointments,
+            'dailyAppointments' => $dailyAppointments,
             'averageCart' => $averageCart,
             'topServices' => $topServices,
             'topProducts' => $topProducts,

@@ -21,6 +21,7 @@ security:
                 username_parameter: _username
                 password_parameter: _password
                 default_target_path: admin_dashboard
+                success_handler: App\Security\AuthenticationSuccessHandler
             logout:
                 path: admin_logout
                 target: home
@@ -33,6 +34,7 @@ security:
                 username_parameter: _username
                 password_parameter: _password
                 default_target_path: employee_dashboard
+                success_handler: App\Security\AuthenticationSuccessHandler
             logout:
                 path: admin_logout
                 target: home

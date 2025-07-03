@@ -1,0 +1,78 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Produits | Admin{% endblock %}
+
+{% block content %}
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des Produits</h1>
+        <a href="{{ path('admin_product_new') }}" class="btn btn-primary">
+            Nouveau Produit
+        </a>
+    </div>
+
+    {% set productImages = {
+        'Lace frontal': 'https://images.pexels.com/photos/2703039/pexels-photo-2703039.jpeg',
+        'Closure': 'https://images.pexels.com/photos/19190390/pexels-photo-19190390.jpeg',
+        'Perruques customisées': 'https://images.pexels.com/photos/2085528/pexels-photo-2085528.jpeg',
+        'Perruques glueless': 'https://images.pexels.com/photos/13221801/pexels-photo-13221801.jpeg',
+        'Perruques synthétiques': 'https://images.pexels.com/photos/4724468/pexels-photo-4724468.jpeg',
+        'Huiles et sérums': 'https://images.pexels.com/photos/994173/pexels-photo-994173.jpeg',
+        'Shampooings & après-shampooings': 'https://images.pexels.com/photos/332046/pexels-photo-332046.jpeg',
+        'Masques capillaires': 'https://images.pexels.com/photos/4210657/pexels-photo-4210657.jpeg',
+        'Gels & mousses coiffantes': 'https://images.pexels.com/photos/2701767/pexels-photo-2701767.jpeg',
+        'Produits pour cheveux naturels / crépus / bouclés': 'https://images.pexels.com/photos/887352/pexels-photo-887352.jpeg'
+    } %}
+
+    {% for categoryName, group in groupedProducts %}
+        <div class="card overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-4">
+                <h3 class="text-xl font-semibold">{{ group.category.name }}</h3>
+                <p class="text-green-100 text-sm">{{ group.category.description }}</p>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for product in group.products %}
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 hover-lift flex flex-col h-full">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2">{{ product.name }}</h4>
+                            <p class="text-gray-600 text-sm mb-3">{{ product.description }}</p>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-500">Prix :</span>
+                                <span class="font-semibold text-gray-800">{{ product.price }}€</span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-500">Stock :</span>
+                                <span class="font-semibold text-gray-800">{{ product.stockQuantity }}</span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-4">
+                                <span class="text-gray-500">SKU :</span>
+                                <span class="font-semibold text-gray-800">{{ product.sku }}</span>
+                            </div>
+                            <div class="flex-grow"></div>
+                            <div class="flex gap-2 mt-4">
+                                <a href="{{ path('admin_product_edit', {'id': product.id}) }}" class="btn btn-primary btn-sm flex-1">Modifier</a>
+                                <form method="POST" action="{{ path('admin_product_toggle', {'id': product.id}) }}" class="inline">
+                                    <button type="submit" class="btn btn-secondary btn-sm flex-1">
+                                        {{ product.isActive ? 'Désactiver' : 'Activer' }}
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ path('admin_product_delete', {'id': product.id}) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
+                                    <button type="submit" class="btn btn-danger btn-sm flex-1">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="md:col-span-3 text-center py-8 text-gray-500">
+                            <p>Aucun produit dans cette catégorie</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card p-12 text-center">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Aucun produit disponible</h3>
+            <p class="text-gray-600 mb-8">Commencez par créer votre premier produit</p>
+            <a href="{{ path('admin_product_new') }}" class="btn btn-primary">Créer le premier produit</a>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -84,51 +84,23 @@ class AppointmentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getWeeklyAppointments(int $weeks = 4): array
+    public function getDailyAppointments(int $days = 30): array
     {
         $connection = $this->getEntityManager()->getConnection();
-        
         $sql = "
             SELECT 
-                DATE(a.appointment_date) as week_start, 
-                COUNT(a.id) as count
+                a.appointment_date::date AS day, 
+                COUNT(a.id) AS count
             FROM appointments a
             WHERE a.appointment_date >= :start_date
-            GROUP BY DATE(a.appointment_date)
-            ORDER BY week_start ASC
+            GROUP BY day
+            ORDER BY day ASC
         ";
-        
+        $startDate = (new \DateTime('-' . $days . ' days'))->format('Y-m-d 00:00:00');
         $stmt = $connection->prepare($sql);
-        $stmt->bindValue('start_date', new \DateTime('-' . $weeks . ' weeks'), \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
+        $stmt->bindValue('start_date', $startDate);
         $result = $stmt->executeQuery();
-        
         return $result->fetchAllAssociative();
-    }
-
-    public function getTotalSpentByUser($user): float
-    {
-        $qb = $this->createQueryBuilder('a')
-            ->select('SUM(a.price) as total')
-            ->where('a.client = :user')
-            ->andWhere('a.status != :cancelled')
-            ->setParameter('user', $user)
-            ->setParameter('cancelled', Appointment::STATUS_CANCELLED);
-
-        $result = $qb->getQuery()->getSingleResult();
-        return $result['total'] ? (float) $result['total'] : 0.0;
-    }
-
-    public function getTotalSpentByUserCompleted($user): float
-    {
-        $qb = $this->createQueryBuilder('a')
-            ->select('SUM(a.price) as total')
-            ->where('a.client = :user')
-            ->andWhere('a.status = :completed')
-            ->setParameter('user', $user)
-            ->setParameter('completed', Appointment::STATUS_COMPLETED);
-
-        $result = $qb->getQuery()->getSingleResult();
-        return $result['total'] ? (float) $result['total'] : 0.0;
     }
 
     public function getTotalRevenueFromCompleted(): float
@@ -136,31 +108,9 @@ class AppointmentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
             ->select('SUM(a.price) as total')
             ->where('a.status = :completed')
-            ->setParameter('completed', Appointment::STATUS_COMPLETED);
+            ->setParameter('completed', 'completed');
 
         $result = $qb->getQuery()->getSingleResult();
         return $result['total'] ? (float) $result['total'] : 0.0;
-    }
-
-    public function findUpcomingByUser($user, int $limit = null): array
-    {
-        $qb = $this->createQueryBuilder('a')
-            ->join('a.service', 's')
-            ->join('a.employee', 'e')
-            ->join('e.user', 'u')
-            ->addSelect('s', 'e', 'u')
-            ->andWhere('a.client = :user')
-            ->andWhere('a.appointmentDate >= :now')
-            ->andWhere('a.status IN (:statuses)')
-            ->setParameter('user', $user)
-            ->setParameter('now', new \DateTime())
-            ->setParameter('statuses', ['pending', 'confirmed'])
-            ->orderBy('a.appointmentDate', 'ASC');
-
-        if ($limit !== null) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb->getQuery()->getResult();
     }
 } 
